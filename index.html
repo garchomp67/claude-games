@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Claude Games</title>
+<meta name="description" content="Browser games made with Claude. Free to play, no download.">
+<meta property="og:title" content="Claude Games">
+<meta property="og:description" content="Browser games made with Claude. Free to play, no download.">
+<meta property="og:image" content="wildgrove-tamers/thumbnail.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: a cabinet-style header, then a grid of game cards; each card is a screenshot "screen" with its info below */
+:root {
+  --bg: #f4f1ea; --surface: #ffffff; --ink: #2b2540; --muted: #6b6384; --line: #e2dccd;
+  --accent: #f2a541; --accent-ink: #2b2540; --screen: #1f1a30;
+  --display: 'Pixelify Sans', ui-monospace, 'Courier New', monospace;
+  --body: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #1b1729; --surface: #262038; --ink: #f3efe6; --muted: #a59dbd; --line: #3a3352; --screen: #120f1c; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font-family: var(--body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 56px; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 32px; }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1; margin: 0; letter-spacing: .01em; text-wrap: balance; }
+h1 span { color: var(--accent); }
+.lede { margin: 10px 0 0; color: var(--muted); max-width: 52ch; }
+.count { font-family: var(--display); font-size: .95rem; color: var(--muted); border: 2px solid var(--line); border-radius: 999px; padding: 4px 14px; white-space: nowrap; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 24px; }
+.card { display: flex; flex-direction: column; background: var(--surface); border: 2px solid var(--line); border-radius: 14px; overflow: hidden; color: inherit; text-decoration: none; transition: transform .15s ease, border-color .15s ease; min-width: 0; }
+.card:hover, .card:focus-visible { transform: translateY(-3px); border-color: var(--accent); }
+.card:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.screen { background: var(--screen); aspect-ratio: 1200 / 630; max-width: 100%; overflow: hidden; }
+.screen img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.info { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0; }
+.info h2 { font-family: var(--display); font-weight: 700; font-size: 1.45rem; margin: 0; }
+.info p { margin: 0; color: var(--muted); font-size: .95rem; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.tags span { font-size: .72rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); border: 1.5px solid var(--line); border-radius: 6px; padding: 1px 7px; }
+.play { margin-top: auto; padding-top: 10px; }
+.play span { display: inline-block; font-family: var(--display); font-size: 1.05rem; background: var(--accent); color: var(--accent-ink); border-radius: 8px; padding: 6px 16px; box-shadow: 0 3px 0 var(--ink); }
+.soon { border-style: dashed; justify-content: center; align-items: center; text-align: center; min-height: 220px; padding: 24px; color: var(--muted); }
+.soon b { font-family: var(--display); font-size: 1.2rem; color: var(--ink); display: block; margin-bottom: 4px; }
+footer { margin-top: 40px; color: var(--muted); font-size: .85rem; }
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Claude <span>Games</span></h1>
+      <p class="lede">Browser games built with Claude. Free to play, no download, and your progress saves in your browser.</p>
+    </div>
+    <span class="count" id="count"></span>
+  </header>
+
+  <main class="grid" id="games"></main>
+
+  <footer>Every game runs in its own folder. Add one by dropping a folder with an <code>index.html</code> into the repo and listing it in this page.</footer>
+</div>
+
+<script>
+/* To add a game: create a folder with its index.html (and a 1200x630 thumbnail.png), then add an entry here. */
+const GAMES = [
+  {
+    path: 'wildgrove-tamers/',
+    title: 'Wildgrove Tamers',
+    blurb: 'Catch, battle and evolve over 600 creatures across a huge world. Beat 9 gyms and the Boss, explore caves, Lava Island and Frostspire Mountain, and hunt down 8 legendaries.',
+    tags: ['Adventure', 'Creature catching', 'Turn-based'],
+    thumb: 'wildgrove-tamers/thumbnail.png'
+  }
+];
+
+const grid = document.getElementById('games');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+grid.innerHTML = GAMES.map(g => `
+  <a class="card" href="${esc(g.path)}">
+    <div class="screen">${g.thumb ? `<img src="${esc(g.thumb)}" alt="Screenshot of ${esc(g.title)}" loading="lazy">` : ''}</div>
+    <div class="info">
+      <h2>${esc(g.title)}</h2>
+      <p>${esc(g.blurb)}</p>
+      <div class="tags">${(g.tags || []).map(t => `<span>${esc(t)}</span>`).join('')}</div>
+      <div class="play"><span>Play ▶</span></div>
+    </div>
+  </a>`).join('') + `
+  <div class="card soon"><div><b>More games coming</b>The next one is in the workshop.</div></div>`;
+document.getElementById('count').textContent = GAMES.length === 1 ? '1 game' : `${GAMES.length} games`;
+</script>
+</body>
+</html>
