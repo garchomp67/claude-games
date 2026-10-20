@@ -8,6 +8,14 @@ Browser games built with Claude, published as a GitHub Pages site.
 |---|---|
 | Wildgrove Tamers | [`wildgrove-tamers/`](wildgrove-tamers/) |
 
+## Other (not games)
+
+Listed in the **Other** section at the bottom of the main page, and not counted as games.
+
+| Project | Folder |
+|---|---|
+| Kitchen Table | [`kitchen-table/`](kitchen-table/) |
+
 ## How the site is laid out
 
 ```
