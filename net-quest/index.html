@@ -1,0 +1,1118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Net Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1f2a1c; --line:#2b3a26; --panel:#fffcf2; --soft:#f3ecd8;
+  --accent:#ff7a3d; --gem:#2f9fe8; --good:#2f9e63; --bad:#d9454b; --gold:#e8a317;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#86c965;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent}
+canvas{display:block}
+button{font:inherit;color:inherit}
+.px{font-family:'Pixelify Sans','Atkinson Hyperlegible',sans-serif}
+
+/* HUD */
+#hud{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;gap:8px;padding:10px 12px;pointer-events:none;flex-wrap:wrap}
+.hud-group{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}
+.chip{pointer-events:auto;background:var(--panel);border:3px solid var(--line);border-radius:12px;padding:5px 10px;font-weight:700;box-shadow:0 3px 0 var(--line);display:flex;align-items:center;gap:6px;font-size:15px;white-space:nowrap}
+button.chip{cursor:pointer}
+button.chip:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.lv{background:var(--accent);color:#fff}
+.month{flex-direction:column;align-items:stretch;gap:3px;padding:4px 10px;min-width:170px}
+.month .row{display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.bar{height:9px;background:var(--soft);border:2px solid var(--line);border-radius:6px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--good);width:0;transition:width .4s}
+.nets span{padding:1px 6px;border-radius:7px}
+.nets span.on{background:#ffe6a8;outline:2px solid var(--line)}
+.badge{background:var(--bad);color:#fff;border-radius:999px;padding:0 7px;font-size:12px;line-height:18px}
+
+@media (max-width:640px){
+  #hud{padding:8px;gap:6px}
+  .hud-group{gap:6px}
+  .chip{font-size:13px;padding:4px 8px;border-width:2px;box-shadow:0 2px 0 var(--line)}
+  .month{min-width:150px}
+}
+
+/* Toast */
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:var(--panel);border:3px solid var(--line);border-radius:12px;padding:8px 14px;font-weight:700;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;text-align:center;box-shadow:0 3px 0 var(--line);z-index:5}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Touch controls */
+#touch{display:none}
+body.touch #touch{display:block}
+.dpad{position:fixed;left:18px;bottom:18px;width:150px;height:150px;z-index:3}
+.dpad button,.abtn{position:absolute;width:52px;height:52px;border-radius:14px;border:3px solid var(--line);background:rgba(255,252,242,.85);font-size:22px;box-shadow:0 3px 0 var(--line);touch-action:none}
+.dpad .u{left:49px;top:0}.dpad .d{left:49px;bottom:0}.dpad .l{left:0;top:49px}.dpad .r{right:0;top:49px}
+.abtn{position:fixed;right:24px;bottom:40px;width:84px;height:84px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:20px;z-index:3}
+body.touch #toast{bottom:190px}
+
+/* Modal */
+#modal{position:fixed;inset:0;background:rgba(20,30,18,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+#modal[hidden]{display:none}
+.card{background:var(--panel);border:4px solid var(--line);border-radius:18px;box-shadow:0 6px 0 var(--line);padding:20px;width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;animation:pop .25s ease-out;user-select:text;-webkit-user-select:text}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+.card h2{font-family:'Pixelify Sans',sans-serif;margin:0 0 8px;font-size:28px;line-height:1.1}
+.card p{margin:8px 0;line-height:1.45}
+.big{font-size:72px;line-height:1;text-align:center;margin:6px 0}
+.center{text-align:center}
+.btn{cursor:pointer;border:3px solid var(--line);border-radius:12px;padding:9px 16px;font-weight:700;background:#fff;box-shadow:0 3px 0 var(--line);font-size:16px}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.good{background:var(--good);color:#fff}
+.btn.small{padding:5px 10px;font-size:14px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.robot{display:flex;gap:12px;align-items:flex-start;background:#e6f3ff;border:3px solid var(--line);border-radius:14px;padding:12px;margin:10px 0}
+.robot .face{font-size:42px;line-height:1}
+.task{background:#fff;border:3px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;font-size:18px}
+.task .what{font-weight:700;font-size:20px}
+.due{font-weight:700}
+.due.soon{color:var(--bad)}
+.row-item{display:flex;gap:12px;align-items:center;background:#fff;border:3px solid var(--line);border-radius:14px;padding:10px;margin:8px 0}
+.row-item .em{font-size:40px;line-height:1}
+.row-item .body{flex:1;min-width:0}
+.row-item .t{font-weight:700}
+.sub{font-size:14px;opacity:.8}
+.pbar{height:12px;background:var(--soft);border:2px solid var(--line);border-radius:7px;overflow:hidden;margin:5px 0}
+.pbar>i{display:block;height:100%;background:var(--gem)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:10px}
+.cell{background:#fff;border:3px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center}
+.cell .e{font-size:38px;line-height:1.1}
+.cell .e.unknown{filter:brightness(0);opacity:.25}
+.cell .n{font-weight:700;font-size:13px}
+.cell .c{font-size:12px;opacity:.75}
+.tag{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:6px;padding:1px 6px}
+.shop-item{display:flex;align-items:center;gap:12px;background:#fff;border:3px solid var(--line);border-radius:14px;padding:12px;margin:10px 0}
+.shop-item .em{font-size:44px}
+.shop-item .body{flex:1}
+input[type=text],input[type=password],input[type=tel]{font:inherit;border:3px solid var(--line);border-radius:10px;padding:8px 10px;width:100%;background:#fff}
+.pin{letter-spacing:10px;text-align:center;font-size:26px;max-width:200px;margin:8px auto;display:block}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
+.section{margin-top:18px}
+.section h3{margin:0 0 6px;font-size:17px}
+.list-line{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:2px dashed var(--soft)}
+label.toggle{display:flex;gap:8px;align-items:center;font-weight:700;cursor:pointer}
+label.toggle input{width:20px;height:20px}
+
+/* Battle */
+.arena{display:flex;justify-content:space-between;align-items:center;margin:10px 0}
+.fighter{text-align:center;width:42%}
+.fighter .e{font-size:64px;line-height:1.1;transition:transform .15s}
+.fighter .e.hit{transform:translateX(10px) rotate(12deg);filter:drop-shadow(0 0 6px #ff4d4d)}
+.hearts{font-size:22px;letter-spacing:2px}
+.vs{font-family:'Pixelify Sans';font-size:26px}
+.tbar{position:relative;height:38px;background:#ffe1d3;border:3px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0 6px}
+.tbar .zone{position:absolute;top:0;bottom:0;background:#7bd88f;border-left:3px solid var(--line);border-right:3px solid var(--line)}
+.tbar .mark{position:absolute;top:-2px;bottom:-2px;width:8px;margin-left:-4px;background:var(--ink);border-radius:4px}
+.bmsg{text-align:center;font-weight:700;min-height:24px}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <div class="hud-group">
+    <div class="chip lv px" id="hudLevel">Lv 1</div>
+    <div class="chip month">
+      <div class="row"><span id="hudMonth">🐾 0 / 10 this month</span><span id="hudDays">30 days left</span></div>
+      <div class="bar"><i id="hudBar"></i></div>
+    </div>
+    <div class="chip" title="Gems">💎 <span id="hudGems">0</span></div>
+    <button class="chip nets" id="hudNets" title="Tap to choose which net to throw"><span id="netBasic">🥅 0</span><span id="netGold">✨ 0</span></button>
+  </div>
+  <div class="hud-group">
+    <button class="chip" id="btnTasks">📋 Tasks <span class="badge" id="hudTaskCount" hidden>0</span></button>
+    <button class="chip" id="btnBook">📖 Animals</button>
+    <button class="chip" id="btnParents">🔒 Parents</button>
+    <button class="chip" id="btnSound" title="Sound on/off">🔊</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<div id="touch">
+  <div class="dpad">
+    <button class="u" data-dir="up">▲</button>
+    <button class="l" data-dir="left">◀</button>
+    <button class="r" data-dir="right">▶</button>
+    <button class="d" data-dir="down">▼</button>
+  </div>
+  <button class="abtn" id="abtn">A</button>
+</div>
+
+<div id="modal" hidden><div class="card" id="card"></div></div>
+
+<script>
+'use strict';
+/* ============================================================
+   Net Quest
+   Throw a net at an animal → the robot gives you a task with a
+   due date → finish it in time to catch the animal.
+   Catch 10 animals in a month to level up.
+   ============================================================ */
+
+const $ = s => document.querySelector(s);
+const qs = new URLSearchParams(location.search);
+const TIME_OFFSET = (parseFloat(qs.get('dayOffset')) || 0) * 86400000; // testing aid
+const now = () => Date.now() + TIME_OFFSET;
+const DAY = 86400000;
+const MONTH_DAYS = 30;
+const GOAL = 10;
+const MAX_NETTED = 5;
+const NET_PRICE = 3, GOLD_PRICE = 8;
+const SAVE_KEY = 'net-quest-v1';
+
+/* ---------- Animals ---------- */
+const SPECIES = [
+  {id:'bunny',    e:'🐰', name:'Bunny',     r:1, lv:1},
+  {id:'squirrel', e:'🐿️', name:'Squirrel',  r:1, lv:1},
+  {id:'frog',     e:'🐸', name:'Frog',      r:1, lv:1},
+  {id:'duck',     e:'🦆', name:'Duck',      r:1, lv:1},
+  {id:'mouse',    e:'🐭', name:'Mouse',     r:1, lv:1},
+  {id:'hedgehog', e:'🦔', name:'Hedgehog',  r:2, lv:1},
+  {id:'fox',      e:'🦊', name:'Fox',       r:2, lv:1},
+  {id:'turtle',   e:'🐢', name:'Turtle',    r:2, lv:1},
+  {id:'raccoon',  e:'🦝', name:'Raccoon',   r:2, lv:2},
+  {id:'owl',      e:'🦉', name:'Owl',       r:2, lv:2},
+  {id:'deer',     e:'🦌', name:'Deer',      r:3, lv:2},
+  {id:'beaver',   e:'🦫', name:'Beaver',    r:3, lv:2},
+  {id:'bear',     e:'🐻', name:'Bear',      r:3, lv:3},
+  {id:'wolf',     e:'🐺', name:'Wolf',      r:3, lv:3},
+  {id:'flamingo', e:'🦩', name:'Flamingo',  r:3, lv:3},
+  {id:'lion',     e:'🦁', name:'Lion',      r:4, lv:4},
+  {id:'tiger',    e:'🐯', name:'Tiger',     r:4, lv:4},
+  {id:'giraffe',  e:'🦒', name:'Giraffe',   r:4, lv:4},
+  {id:'elephant', e:'🐘', name:'Elephant',  r:4, lv:4},
+  {id:'panda',    e:'🐼', name:'Panda',     r:4, lv:5},
+  {id:'unicorn',  e:'🦄', name:'Unicorn',   r:4, lv:5},
+  {id:'dragon',   e:'🐉', name:'Dragon',    r:4, lv:5},
+];
+const SP = Object.fromEntries(SPECIES.map(s => [s.id, s]));
+const RARITY = ['', 'Common', 'Uncommon', 'Rare', 'Super rare'];
+const RCOLOR = ['', '#5f8a52', '#2f7fc4', '#8b4fd6', '#d98a00'];
+const RWEIGHT = [0, 50, 30, 15, 5];
+
+const DEFAULT_REAL = [
+  'Clean the table', 'Make your bed', 'Read a book for 15 minutes', 'Put your toys away',
+  'Brush your teeth', 'Help set the table', 'Put dirty clothes in the hamper',
+  'Water a plant', 'Practice writing for 10 minutes', 'Help clean up after dinner'
+];
+
+/* ---------- Save ---------- */
+function freshState() {
+  return {
+    v: 1, gems: 5, nets: 3, gold: 0, useGold: false,
+    level: 1, monthStart: now(), monthCaught: 0, totalCaught: 0,
+    caught: [], netted: [], wild: [], lastSpawnDay: null, lastTrickle: now(),
+    trainerReady: {}, chickenReady: {},
+    settings: { real: true, realList: DEFAULT_REAL.slice() },
+    pin: null, muted: false, nextId: 1, introSeen: false
+  };
+}
+let S;
+try { S = JSON.parse(localStorage.getItem(SAVE_KEY)); } catch (e) { S = null; }
+if (!S || S.v !== 1) S = freshState();
+function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
+
+/* ---------- Dates ---------- */
+const dayKey = t => { const d = new Date(t); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+function endOfDay(t, addDays) { const d = new Date(t); d.setHours(23, 59, 59, 999); d.setDate(d.getDate() + addDays); return d.getTime(); }
+const fmtDate = t => new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+function dueText(t) {
+  const today = endOfDay(now(), 0);
+  if (t <= today) return 'Due today!';
+  if (t <= endOfDay(now(), 1)) return 'Due tomorrow (' + fmtDate(t) + ')';
+  return 'Due ' + fmtDate(t);
+}
+const daysLeft = () => Math.max(0, Math.ceil((S.monthStart + MONTH_DAYS * DAY - now()) / DAY));
+
+/* ---------- Sound ---------- */
+let AC = null;
+function audio() { if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (AC && AC.state === 'suspended') AC.resume(); return AC; }
+function tone(freqs, dur, type = 'sine', vol = 0.18, when = 0) {
+  if (S.muted) return; const ac = audio(); if (!ac) return;
+  const t0 = ac.currentTime + when, o = ac.createOscillator(), g = ac.createGain();
+  o.type = type; o.frequency.setValueAtTime(freqs[0], t0);
+  for (let i = 1; i < freqs.length; i++) o.frequency.exponentialRampToValueAtTime(freqs[i], t0 + dur * i / (freqs.length - 1));
+  g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+  o.connect(g).connect(ac.destination); o.start(t0); o.stop(t0 + dur + 0.02);
+}
+const sfx = {
+  boing() { tone([110, 520, 180, 380, 240], 0.55, 'sine', 0.3); },
+  gem() { tone([880, 1320], 0.12, 'triangle', 0.15); tone([1320, 1760], 0.12, 'triangle', 0.12, 0.08); },
+  throw() { tone([300, 700], 0.18, 'triangle', 0.1); },
+  win() { [523, 659, 784, 1047].forEach((f, i) => tone([f, f], 0.18, 'square', 0.08, i * 0.11)); },
+  levelup() { [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => tone([f, f], 0.16, 'square', 0.08, i * 0.1)); },
+  hit() { tone([220, 90], 0.15, 'square', 0.12); },
+  miss() { tone([200, 120], 0.25, 'sawtooth', 0.08); },
+  sad() { tone([400, 200], 0.5, 'triangle', 0.12); },
+  cluck() { tone([700, 500], 0.08, 'square', 0.07); tone([800, 550], 0.08, 'square', 0.07, 0.1); },
+  click() { tone([600, 600], 0.04, 'square', 0.05); }
+};
+
+/* ---------- World ---------- */
+const T = 48, MW = 40, MH = 28;
+const GRASS = 0, PATH = 1, TREE = 2, WATER = 3, WALL = 4, FLOWER = 5;
+const map = new Uint8Array(MW * MH);
+const flowerColor = {};
+function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const STORE = { x: 5, y: 3, w: 6, h: 4 }, DOOR = { x: 8, y: 6 };
+const COOP = { x: 19, y: 4, w: 9, h: 6 };
+const START = { x: 8, y: 9 };
+const TRAINERS = [
+  { id: 'sam', name: 'Sam', e: '👦', x: 15, y: 10, lv: 1 },
+  { id: 'mia', name: 'Mia', e: '👧', x: 33, y: 8, lv: 2 },
+  { id: 'leo', name: 'Leo', e: '🧑', x: 12, y: 21, lv: 3 },
+  { id: 'ana', name: 'Coach Ana', e: '👩', x: 23, y: 24, lv: 4 },
+];
+const tileAt = (x, y) => (x < 0 || y < 0 || x >= MW || y >= MH) ? TREE : map[y * MW + x];
+const setTile = (x, y, v) => { map[y * MW + x] = v; };
+const passableTile = v => v === GRASS || v === PATH || v === FLOWER;
+function genMap() {
+  const R = rng(20261019);
+  for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
+    setTile(x, y, (x < 2 || y < 2 || x >= MW - 2 || y >= MH - 2) ? TREE : GRASS);
+  }
+  for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) {
+    if (((x - 29) / 5.5) ** 2 + ((y - 20) / 3.2) ** 2 < 1) setTile(x, y, WATER);
+  }
+  for (let y = STORE.y; y < STORE.y + STORE.h; y++) for (let x = STORE.x; x < STORE.x + STORE.w; x++) setTile(x, y, WALL);
+  for (let y = 7; y <= 14; y++) setTile(8, y, PATH);
+  for (let x = 3; x <= 36; x++) setTile(x, 14, PATH);
+  for (let y = 14; y <= 25; y++) setTile(20, y, PATH);
+  for (let y = 7; y <= 14; y++) setTile(23, y, PATH);
+  const blocked = (x, y) =>
+    (x >= STORE.x - 2 && x <= STORE.x + STORE.w + 1 && y >= STORE.y - 1 && y <= STORE.y + STORE.h + 3) ||
+    (x >= COOP.x - 1 && x <= COOP.x + COOP.w && y >= COOP.y - 1 && y <= COOP.y + COOP.h) ||
+    TRAINERS.some(t => Math.abs(t.x - x) <= 1 && Math.abs(t.y - y) <= 1) ||
+    (Math.abs(x - START.x) <= 2 && Math.abs(y - START.y) <= 2);
+  for (let i = 0; i < 90; i++) {
+    const x = 2 + Math.floor(R() * (MW - 4)), y = 2 + Math.floor(R() * (MH - 4));
+    if (tileAt(x, y) === GRASS && !blocked(x, y)) setTile(x, y, TREE);
+  }
+  const cols = ['#ff6fa5', '#ffd23f', '#ffffff', '#b28dff', '#ff8c42'];
+  for (let i = 0; i < 70; i++) {
+    const x = 2 + Math.floor(R() * (MW - 4)), y = 2 + Math.floor(R() * (MH - 4));
+    if (tileAt(x, y) === GRASS) { setTile(x, y, FLOWER); flowerColor[y * MW + x] = cols[Math.floor(R() * cols.length)]; }
+  }
+}
+genMap();
+
+function passablePx(x, y, r) {
+  return passableTile(tileAt(Math.floor((x - r) / T), Math.floor((y - r) / T))) &&
+         passableTile(tileAt(Math.floor((x + r) / T), Math.floor((y - r) / T))) &&
+         passableTile(tileAt(Math.floor((x - r) / T), Math.floor((y + r) / T))) &&
+         passableTile(tileAt(Math.floor((x + r) / T), Math.floor((y + r) / T)));
+}
+function randomOpenSpot(minDistFromPlayer, zone) {
+  for (let i = 0; i < 400; i++) {
+    const tx = zone ? zone.x + Math.floor(Math.random() * zone.w) : 2 + Math.floor(Math.random() * (MW - 4));
+    const ty = zone ? zone.y + Math.floor(Math.random() * zone.h) : 2 + Math.floor(Math.random() * (MH - 4));
+    const v = tileAt(tx, ty);
+    if (v !== GRASS && v !== FLOWER) continue;
+    if (!zone && tx >= COOP.x && tx < COOP.x + COOP.w && ty >= COOP.y && ty < COOP.y + COOP.h) continue;
+    const x = tx * T + T / 2, y = ty * T + T / 2;
+    if (minDistFromPlayer && Math.hypot(x - player.x, y - player.y) < minDistFromPlayer) continue;
+    return { x, y };
+  }
+  return { x: START.x * T + T / 2, y: START.y * T + T / 2 };
+}
+
+/* ---------- Entities ---------- */
+const player = { x: START.x * T + T / 2, y: START.y * T + T / 2, r: 13, face: 1, bob: 0 };
+let animals = [];   // live wild animals on the map {uid, sp, x, y, vx, vy, timer}
+let chickens = [];
+let gems = [];
+let floats = [];    // floating texts
+let anim = null;    // net throw animation
+let gemTimer = 0;
+const inZone = (x, y, z) => !z || (x > z.x * T + 10 && x < (z.x + z.w) * T - 10 && y > z.y * T + 10 && y < (z.y + z.h) * T - 10);
+
+function spawnWildEntity(w) {
+  const p = randomOpenSpot(T * 4);
+  animals.push({ uid: w.uid, sp: w.sp, x: p.x, y: p.y, vx: 0, vy: 0, timer: Math.random() * 2, hop: Math.random() * 6 });
+}
+function pickSpecies() {
+  const pool = SPECIES.filter(s => s.lv <= S.level);
+  let total = pool.reduce((a, s) => a + RWEIGHT[s.r], 0), r = Math.random() * total;
+  for (const s of pool) { r -= RWEIGHT[s.r]; if (r <= 0) return s; }
+  return pool[0];
+}
+function addWild(n) {
+  for (let i = 0; i < n; i++) {
+    if (S.wild.length >= 8) break;
+    const w = { uid: S.nextId++, sp: pickSpecies().id };
+    S.wild.push(w); spawnWildEntity(w);
+  }
+}
+function wildArrivals() {
+  const k = dayKey(now());
+  if (S.lastSpawnDay !== k) {
+    const first = S.lastSpawnDay === null;
+    S.lastSpawnDay = k;
+    addWild(first ? 5 : 4);
+    if (!first) toast('🌅 New day! New animals came to the meadow.');
+    S.lastTrickle = now(); save();
+  }
+  // a new animal wanders in every 10 minutes while the meadow is quiet
+  if (S.wild.length < 3 && now() - S.lastTrickle > 10 * 60000) {
+    S.lastTrickle = now(); addWild(1); save();
+    toast('👀 A new animal wandered into the meadow!');
+  }
+}
+function initEntities() {
+  animals = []; S.wild.forEach(spawnWildEntity);
+  chickens = [0, 1, 2].map(i => { const p = randomOpenSpot(0, COOP); return { i, x: p.x, y: p.y, vx: 0, vy: 0, timer: 0 }; });
+  gems = []; for (let i = 0; i < 6; i++) spawnGem();
+}
+function spawnGem() { const p = randomOpenSpot(T * 3); gems.push({ x: p.x, y: p.y, t: Math.random() * 6 }); }
+
+function wander(a, dt, speed, zone) {
+  a.timer -= dt;
+  if (a.timer <= 0) {
+    a.timer = 1 + Math.random() * 2.5;
+    const ang = Math.random() * Math.PI * 2, moving = Math.random() < 0.65;
+    a.vx = moving ? Math.cos(ang) * speed : 0; a.vy = moving ? Math.sin(ang) * speed : 0;
+  }
+  const nx = a.x + a.vx * dt, ny = a.y + a.vy * dt;
+  if (passablePx(nx, a.y, 14) && inZone(nx, a.y, zone)) a.x = nx; else a.vx *= -1;
+  if (passablePx(a.x, ny, 14) && inZone(a.x, ny, zone)) a.y = ny; else a.vy *= -1;
+}
+
+/* ---------- Tasks (made by the robot) ---------- */
+function makeTask(sp, golden) {
+  const r = sp.r;
+  let kind;
+  const realOn = S.settings.real && S.settings.realList.length > 0;
+  const roll = Math.random();
+  if (realOn && roll < 0.3) kind = 'real';
+  else kind = ['gems', 'gems', 'battles', 'eggs'][Math.floor(Math.random() * 4)];
+  let target = 1, text = '';
+  if (kind === 'gems') target = [0, 4, 6, 8, 10][r];
+  if (kind === 'battles') target = [0, 1, 2, 3, 5][r];
+  if (kind === 'eggs') target = [0, 2, 3, 4, 6][r];
+  if (kind === 'real') text = S.settings.realList[Math.floor(Math.random() * S.settings.realList.length)];
+  if (golden && kind !== 'real') target = Math.max(1, Math.ceil(target * 0.6));
+  const days = Math.min(4, r) + (golden ? 2 : 0);
+  return { kind, target, progress: 0, text, due: endOfDay(now(), days), status: 'todo', doneAt: null };
+}
+function taskLine(t) {
+  if (t.kind === 'gems') return `💎 Find ${t.target} gem${t.target > 1 ? 's' : ''}`;
+  if (t.kind === 'battles') return `⚔️ Win ${t.target} battle${t.target > 1 ? 's' : ''}`;
+  if (t.kind === 'eggs') return `🐔 Get ${t.target} gem egg${t.target > 1 ? 's' : ''} from the chickens`;
+  return `🏠 ${t.text}`;
+}
+function addProgress(kind, n = 1) {
+  let finished = [];
+  for (const it of S.netted) {
+    if (it.task.kind !== kind) continue;
+    it.task.progress = Math.min(it.task.target, it.task.progress + n);
+    if (it.task.progress >= it.task.target) finished.push(it);
+  }
+  finished.forEach(catchAnimal);
+  updateHud(); save();
+}
+function catchAnimal(it, byParent) {
+  const i = S.netted.indexOf(it); if (i < 0) return;
+  S.netted.splice(i, 1);
+  S.caught.push({ sp: it.sp, at: now() });
+  S.monthCaught++; S.totalCaught++;
+  const bonus = it.task.kind === 'real' ? 5 : 1;
+  S.gems += bonus;
+  save(); updateHud();
+  const sp = SP[it.sp];
+  showModal(card => {
+    sfx.win();
+    card.innerHTML = `
+      <h2 class="center">Gotcha!</h2>
+      <div class="big">${sp.e}</div>
+      <p class="center">You caught a <b>${sp.name}</b>!${byParent ? ' A grown-up checked in your task.' : ''}</p>
+      <p class="center">🐾 <b>${Math.min(S.monthCaught, GOAL)} / ${GOAL}</b> this month &nbsp;·&nbsp; +${bonus} 💎</p>
+      <div class="actions"><button class="btn primary" data-close>Yay!</button></div>`;
+  });
+  if (S.monthCaught >= GOAL) levelUp();
+}
+function levelUp() {
+  S.level++; S.monthStart = now(); S.monthCaught = 0;
+  S.gems += 5; S.gold += 1;
+  const fresh = SPECIES.filter(s => s.lv === S.level);
+  save(); updateHud();
+  showModal(card => {
+    sfx.levelup();
+    card.innerHTML = `
+      <h2 class="center">LEVEL UP!</h2>
+      <div class="big px" style="color:var(--accent)">Lv ${S.level}</div>
+      <p class="center">You caught ${GOAL} animals this month. Amazing!</p>
+      ${fresh.length ? `<p class="center">New animals can show up now:<br><span style="font-size:40px">${fresh.map(s => s.e).join(' ')}</span></p>` : '<p class="center">You have unlocked every animal. Can you catch them all?</p>'}
+      <p class="center">Prize: +5 💎 and a ✨ Golden Net</p>
+      <p class="center sub">A new month starts now. Catch ${GOAL} more to reach level ${S.level + 1}!</p>
+      <div class="actions"><button class="btn primary" data-close>Let's go!</button></div>`;
+  });
+}
+
+/* ---------- Timers: due dates, month ---------- */
+function checkTimers() {
+  const t = now();
+  for (const it of S.netted.slice()) {
+    if (t > it.task.due && it.task.status !== 'waiting') {
+      S.netted.splice(S.netted.indexOf(it), 1);
+      const sp = SP[it.sp];
+      sfx.sad();
+      showModal(card => {
+        card.innerHTML = `
+          <h2 class="center">Oh no!</h2>
+          <div class="big">${sp.e}💨</div>
+          <p class="center">The task wasn't done by the due date, so the <b>${sp.name}</b> wriggled out of the net and ran away.</p>
+          <p class="center sub">The task was: ${esc(taskLine(it.task))}</p>
+          <div class="actions"><button class="btn primary" data-close>I'll get the next one!</button></div>`;
+      });
+    }
+  }
+  if (t >= S.monthStart + MONTH_DAYS * DAY) {
+    const got = S.monthCaught;
+    S.monthStart = t; S.monthCaught = 0;
+    showModal(card => {
+      card.innerHTML = `
+        <h2 class="center">New month!</h2>
+        <div class="big">📅</div>
+        <p class="center">Last month you caught <b>${got}</b> of ${GOAL} animals.</p>
+        <p class="center">You need ${GOAL} in one month to level up. A new month starts now. You can do it!</p>
+        <div class="actions"><button class="btn primary" data-close>Let's go!</button></div>`;
+    });
+  }
+  wildArrivals();
+  save(); updateHud();
+}
+
+/* ---------- Actions ---------- */
+function getTarget() {
+  let best = null, bd = 70;
+  const consider = (kind, obj, x, y) => { const d = Math.hypot(x - player.x, y - player.y); if (d < bd) { bd = d; best = { kind, obj, x, y }; } };
+  animals.forEach(a => consider('animal', a, a.x, a.y));
+  TRAINERS.forEach(t => consider('trainer', t, t.x * T + T / 2, t.y * T + T / 2));
+  chickens.forEach(c => consider('chicken', c, c.x, c.y));
+  consider('store', null, DOOR.x * T + T / 2, (DOOR.y + 1) * T);
+  return best;
+}
+function promptFor(tg) {
+  const k = isTouch ? 'A' : 'Space';
+  if (tg.kind === 'animal') return `${k} · Throw net at ${SP[tg.obj.sp].name}`;
+  if (tg.kind === 'trainer') {
+    const ready = (S.trainerReady[tg.obj.id] || 0) - now();
+    return ready > 0 ? `${tg.obj.name} is resting ${Math.ceil(ready / 1000)}s` : `${k} · Battle ${tg.obj.name}`;
+  }
+  if (tg.kind === 'chicken') return `${k} · Pet the chicken`;
+  return `${k} · Go in the Store`;
+}
+function doAction() {
+  if (modalOpen || anim) return;
+  const tg = getTarget(); if (!tg) return;
+  audio();
+  if (tg.kind === 'animal') return throwNet(tg.obj);
+  if (tg.kind === 'trainer') return startBattle(tg.obj);
+  if (tg.kind === 'chicken') return petChicken(tg.obj);
+  if (tg.kind === 'store') return openStore();
+}
+function throwNet(a) {
+  if (S.netted.length >= MAX_NETTED) return toast(`Your nets are full! Finish a task first (📋 Tasks).`);
+  let golden = S.useGold && S.gold > 0;
+  if (!golden && S.nets <= 0) {
+    if (S.gold > 0) golden = true;
+    else return toast('No nets left! Buy more at the Store 🏪');
+  }
+  if (golden) S.gold--; else S.nets--;
+  sfx.throw();
+  anim = { a, golden, t: 0, fx: player.x, fy: player.y - 10 };
+  updateHud(); save();
+}
+function finishNet(a, golden) {
+  sfx.boing();
+  floats.push({ x: a.x, y: a.y - 30, text: 'BOING!', t: 0, color: '#ff7a3d', size: 30 });
+  animals = animals.filter(x => x !== a);
+  S.wild = S.wild.filter(w => w.uid !== a.uid);
+  const sp = SP[a.sp];
+  const task = makeTask(sp, golden);
+  const item = { id: S.nextId++, sp: sp.id, task, at: now(), golden };
+  S.netted.push(item);
+  save(); updateHud();
+  setTimeout(() => showModal(card => robotCard(card, item)), 450);
+}
+function robotCard(card, item) {
+  const sp = SP[item.sp], t = item.task;
+  card.innerHTML = `
+    <div class="big">${sp.e}</div>
+    <h2 class="center">${sp.name} is in your net!</h2>
+    <p class="center"><span class="tag" style="background:${RCOLOR[sp.r]}">${RARITY[sp.r]}</span>${item.golden ? ' <span class="tag" style="background:var(--gold)">✨ Golden net</span>' : ''}</p>
+    <div class="robot"><div class="face">🤖</div><div>
+      <b>Beep boop!</b> To catch the ${sp.name}, finish this task before the due date:
+    </div></div>
+    <div class="task">
+      <div class="what">${esc(taskLine(t))}</div>
+      <div class="due ${t.due <= endOfDay(now(), 0) ? 'soon' : ''}">📅 ${dueText(t.due)}</div>
+      ${t.kind === 'real' ? '<p class="sub">This is a real-life task! When you are done, open 📋 Tasks and tap "I did it!", then ask a grown-up to check it in.</p>' : ''}
+      ${t.kind === 'battles' ? '<p class="sub">Trainers are standing around the meadow. Walk up and battle them!</p>' : ''}
+      ${t.kind === 'eggs' ? '<p class="sub">The chickens live in the yard near the top. Pet them to get gem eggs!</p>' : ''}
+    </div>
+    <p class="center sub">If it's not done in time, the ${sp.name} will wriggle out and run away!</p>
+    <div class="actions"><button class="btn primary" data-close>On it!</button></div>`;
+}
+function petChicken(c) {
+  const ready = (S.chickenReady[c.i] || 0);
+  if (now() < ready) { sfx.cluck(); floats.push({ x: c.x, y: c.y - 30, text: 'Cluck?', t: 0, color: '#555', size: 18 }); return toast('This chicken needs a rest. Try again soon!'); }
+  S.chickenReady[c.i] = now() + 45000;
+  sfx.cluck(); setTimeout(sfx.gem, 200);
+  S.gems++;
+  floats.push({ x: c.x, y: c.y - 30, text: '🥚 +1 💎', t: 0, color: '#2f9fe8', size: 20 });
+  addProgress('eggs'); addProgress('gems');
+}
+
+/* ---------- Store ---------- */
+function openStore() {
+  showModal(card => {
+    const render = () => {
+      card.innerHTML = `
+        <h2>🏪 Net Store</h2>
+        <p>Welcome! You have <b>💎 ${S.gems}</b> gems.</p>
+        <div class="shop-item"><div class="em">🥅</div><div class="body"><b>Net</b><div class="sub">Throw it at an animal to get a task. You have ${S.nets}.</div></div>
+          <button class="btn primary" id="buyNet" ${S.gems < NET_PRICE ? 'disabled' : ''}>${NET_PRICE} 💎</button></div>
+        <div class="shop-item"><div class="em">✨</div><div class="body"><b>Golden Net</b><div class="sub">Easier task and 2 extra days to finish it. You have ${S.gold}.</div></div>
+          <button class="btn primary" id="buyGold" ${S.gems < GOLD_PRICE ? 'disabled' : ''}>${GOLD_PRICE} 💎</button></div>
+        <p class="sub">Need gems? Pick up sparkly gems in the grass, pet the chickens, win battles, and catch animals.</p>
+        <div class="actions"><button class="btn" data-close>Bye!</button></div>`;
+      card.querySelector('#buyNet').onclick = () => { if (S.gems >= NET_PRICE) { S.gems -= NET_PRICE; S.nets++; sfx.gem(); save(); updateHud(); render(); } };
+      card.querySelector('#buyGold').onclick = () => { if (S.gems >= GOLD_PRICE) { S.gems -= GOLD_PRICE; S.gold++; S.useGold = true; sfx.gem(); save(); updateHud(); render(); } };
+    };
+    render();
+  });
+}
+
+/* ---------- Battle (timing game) ---------- */
+let battle = null;
+function startBattle(tr) {
+  const wait = (S.trainerReady[tr.id] || 0) - now();
+  if (wait > 0) return toast(`${tr.name} is resting. Come back in ${Math.ceil(wait / 1000)} seconds!`);
+  const last = S.caught.length ? SP[S.caught[S.caught.length - 1].sp] : null;
+  const partner = last ? { e: last.e, name: 'Your ' + last.name } : { e: '🧒', name: 'You' };
+  showModal(card => {
+    card.innerHTML = `
+      <h2 class="center">⚔️ Battle!</h2>
+      <p class="center sub">${esc(tr.name)} wants to battle. Press <b>Space</b> or tap <b>Hit!</b> when the marker is in the green.</p>
+      <div class="arena">
+        <div class="fighter"><div class="e" id="bYou">${partner.e}</div><div><b>${esc(partner.name)}</b></div><div class="hearts" id="hYou"></div></div>
+        <div class="vs">VS</div>
+        <div class="fighter"><div class="e" id="bThem">${tr.e}</div><div><b>${esc(tr.name)}</b></div><div class="hearts" id="hThem"></div></div>
+      </div>
+      <div class="tbar"><div class="zone" id="bZone"></div><div class="mark" id="bMark"></div></div>
+      <div class="bmsg" id="bMsg">Get ready…</div>
+      <div class="actions"><button class="btn primary" id="bHit" style="min-width:160px;font-size:20px">Hit!</button><button class="btn" id="bRun">Run away</button></div>`;
+    const zw = Math.max(0.12, 0.3 - tr.lv * 0.04);
+    battle = { tr, partner, you: 3, them: 3, pos: 0, dir: 1, speed: 0.75 + tr.lv * 0.22, zw, zs: 0.3 + Math.random() * (0.7 - zw - 0.3), lock: 0.6, over: false, card };
+    renderBattle();
+    card.querySelector('#bHit').onclick = battleHit;
+    card.querySelector('#bRun').onclick = () => { battle = null; closeModal(); };
+  });
+}
+function renderBattle() {
+  const b = battle; if (!b) return;
+  const c = b.card;
+  c.querySelector('#hYou').textContent = '❤️'.repeat(b.you) + '🤍'.repeat(3 - b.you);
+  c.querySelector('#hThem').textContent = '❤️'.repeat(b.them) + '🤍'.repeat(3 - b.them);
+  const z = c.querySelector('#bZone'); z.style.left = (b.zs * 100) + '%'; z.style.width = (b.zw * 100) + '%';
+}
+function updateBattle(dt) {
+  const b = battle; if (!b || b.over) return;
+  if (b.lock > 0) { b.lock -= dt; if (b.lock <= 0) b.card.querySelector('#bMsg').textContent = 'Now!'; }
+  b.pos += b.dir * b.speed * dt;
+  if (b.pos > 1) { b.pos = 1; b.dir = -1; } if (b.pos < 0) { b.pos = 0; b.dir = 1; }
+  b.card.querySelector('#bMark').style.left = (b.pos * 100) + '%';
+}
+function battleHit() {
+  const b = battle; if (!b || b.over || b.lock > 0) return;
+  const c = b.card, msg = c.querySelector('#bMsg');
+  const hit = b.pos >= b.zs && b.pos <= b.zs + b.zw;
+  const el = c.querySelector(hit ? '#bThem' : '#bYou');
+  el.classList.add('hit'); setTimeout(() => el.classList.remove('hit'), 250);
+  if (hit) { b.them--; sfx.hit(); msg.textContent = ['Bonk!', 'Nice hit!', 'Pow!'][Math.floor(Math.random() * 3)]; b.zs = Math.random() * (1 - b.zw); }
+  else { b.you--; sfx.miss(); msg.textContent = 'Missed! Ouch!'; }
+  b.lock = 0.45;
+  renderBattle();
+  if (b.them <= 0 || b.you <= 0) {
+    b.over = true;
+    const won = b.them <= 0;
+    setTimeout(() => {
+      if (won) {
+        S.trainerReady[b.tr.id] = now() + 90000;
+        S.gems += 2; save();
+        sfx.win();
+        msg.innerHTML = `You won! +2 💎`;
+        addProgress('battles');
+      } else {
+        sfx.sad();
+        msg.innerHTML = `${esc(b.tr.name)} won this time. Try again!`;
+      }
+      const btns = c.querySelector('.actions');
+      btns.innerHTML = `<button class="btn primary" data-close>${won ? 'Yay!' : 'OK'}</button>`;
+    }, 350);
+  }
+}
+
+/* ---------- Tasks panel ---------- */
+function openTasks() {
+  showModal(card => {
+    const render = () => {
+      const items = S.netted.map(it => {
+        const sp = SP[it.sp], t = it.task;
+        const soon = t.due <= endOfDay(now(), 0);
+        let right = '';
+        if (t.kind === 'real') {
+          right = t.status === 'waiting'
+            ? `<div class="sub">⏳ Waiting for a grown-up to check it in</div>`
+            : `<button class="btn good small" data-did="${it.id}">I did it!</button>`;
+        }
+        return `<div class="row-item"><div class="em">${sp.e}</div><div class="body">
+          <div class="t">${sp.name}</div>
+          <div>${esc(taskLine(t))}</div>
+          ${t.kind !== 'real' ? `<div class="pbar"><i style="width:${100 * t.progress / t.target}%"></i></div><div class="sub">${t.progress} / ${t.target}</div>` : ''}
+          <div class="due ${soon ? 'soon' : ''}">📅 ${dueText(t.due)}</div>
+          ${right}
+          <div style="margin-top:6px"><button class="btn small" data-free="${it.id}">Let go</button></div>
+        </div></div>`;
+      }).join('');
+      card.innerHTML = `
+        <h2>📋 Tasks</h2>
+        <p class="sub">Animals in your nets (${S.netted.length} / ${MAX_NETTED}). Finish each task before its due date to catch the animal!</p>
+        ${items || '<p>No animals in your nets yet. Walk up to an animal and throw a net!</p>'}
+        <div class="actions"><button class="btn primary" data-close>Close</button></div>`;
+      card.querySelectorAll('[data-did]').forEach(b => b.onclick = () => {
+        const it = S.netted.find(x => x.id == b.dataset.did);
+        if (it) { it.task.status = 'waiting'; it.task.doneAt = now(); save(); sfx.click(); toast('Great job! Ask a grown-up to check it in 🔒'); render(); }
+      });
+      card.querySelectorAll('[data-free]').forEach(b => b.onclick = () => {
+        if (b.dataset.sure) {
+          const it = S.netted.find(x => x.id == b.dataset.free);
+          if (it) { S.netted.splice(S.netted.indexOf(it), 1); const w = { uid: S.nextId++, sp: it.sp }; S.wild.push(w); spawnWildEntity(w); save(); updateHud(); render(); }
+        } else { b.dataset.sure = 1; b.textContent = 'Tap again to let it go'; }
+      });
+    };
+    render();
+  });
+}
+
+/* ---------- Animal book ---------- */
+function openBook() {
+  const counts = {}; S.caught.forEach(c => counts[c.sp] = (counts[c.sp] || 0) + 1);
+  const kinds = Object.keys(counts).length;
+  showModal(card => {
+    card.innerHTML = `
+      <h2>📖 Animal Book</h2>
+      <p>You've caught <b>${S.totalCaught}</b> animals, <b>${kinds}</b> of ${SPECIES.length} kinds.</p>
+      <div class="grid">${SPECIES.map(s => {
+        const n = counts[s.id];
+        if (n) return `<div class="cell"><div class="e">${s.e}</div><div class="n">${s.name}</div><div class="c">×${n}</div><span class="tag" style="background:${RCOLOR[s.r]}">${RARITY[s.r]}</span></div>`;
+        if (s.lv > S.level) return `<div class="cell"><div class="e unknown">${s.e}</div><div class="n">???</div><div class="c">🔒 Level ${s.lv}</div></div>`;
+        return `<div class="cell"><div class="e unknown">${s.e}</div><div class="n">???</div><div class="c">Not caught yet</div></div>`;
+      }).join('')}</div>
+      <div class="actions"><button class="btn primary" data-close>Close</button></div>`;
+  });
+}
+
+/* ---------- Parent place ---------- */
+function openParents() {
+  showModal(card => {
+    if (!S.pin) return setPin(card, false);
+    pinGate(card);
+  });
+}
+function setPin(card, changing) {
+  card.innerHTML = `
+    <h2>🔒 Grown-ups only</h2>
+    <p>${changing ? 'Choose a new' : 'Welcome! Make a'} 4-digit PIN so only grown-ups can check in real-life tasks.</p>
+    <input class="pin" id="p1" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off">
+    <input class="pin" id="p2" type="password" inputmode="numeric" maxlength="4" placeholder="again" autocomplete="off">
+    <p class="center sub" id="pmsg"></p>
+    <div class="actions"><button class="btn" data-close>Cancel</button><button class="btn primary" id="psave">Save PIN</button></div>`;
+  const p1 = card.querySelector('#p1'); p1.focus();
+  card.querySelector('#psave').onclick = () => {
+    const a = p1.value, b = card.querySelector('#p2').value;
+    if (!/^\d{4}$/.test(a)) return card.querySelector('#pmsg').textContent = 'Please use exactly 4 numbers.';
+    if (a !== b) return card.querySelector('#pmsg').textContent = "The two PINs don't match.";
+    S.pin = a; save(); parentPanel(card);
+  };
+}
+function pinGate(card) {
+  card.innerHTML = `
+    <h2>🔒 Grown-ups only</h2>
+    <p>Enter the parent PIN.</p>
+    <input class="pin" id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off">
+    <p class="center sub" id="pmsg"></p>
+    <div class="actions"><button class="btn" data-close>Cancel</button><button class="btn primary" id="pgo">Open</button></div>
+    <p class="center"><button class="btn small" id="pforgot">Forgot PIN?</button></p>`;
+  const inp = card.querySelector('#pin'); inp.focus();
+  const go = () => {
+    if (inp.value === S.pin) return parentPanel(card);
+    card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+    card.querySelector('#pmsg').textContent = 'That PIN is not right.'; inp.value = '';
+  };
+  card.querySelector('#pgo').onclick = go;
+  inp.onkeydown = e => { if (e.key === 'Enter') go(); };
+  card.querySelector('#pforgot').onclick = () => {
+    const a = 13 + Math.floor(Math.random() * 7), b = 6 + Math.floor(Math.random() * 4);
+    card.innerHTML = `
+      <h2>Forgot the PIN?</h2>
+      <p>Grown-up check: what is <b>${a} × ${b}</b>?</p>
+      <input type="tel" id="ans" inputmode="numeric" autocomplete="off">
+      <p class="center sub" id="pmsg"></p>
+      <div class="actions"><button class="btn" data-close>Cancel</button><button class="btn primary" id="ok">Check</button></div>`;
+    card.querySelector('#ans').focus();
+    card.querySelector('#ok').onclick = () => {
+      if (parseInt(card.querySelector('#ans').value, 10) === a * b) setPin(card, true);
+      else card.querySelector('#pmsg').textContent = 'Not quite.';
+    };
+  };
+}
+function parentPanel(card) {
+  const real = S.netted.filter(it => it.task.kind === 'real');
+  const others = S.netted.filter(it => it.task.kind !== 'real');
+  card.innerHTML = `
+    <h2>👪 Parent place</h2>
+    <div class="section"><h3>Check in real-life tasks</h3>
+      ${real.length ? real.map(it => `
+        <div class="row-item"><div class="em">${SP[it.sp].e}</div><div class="body">
+          <div class="t">${esc(it.task.text)}</div>
+          <div class="sub">${SP[it.sp].name} · ${dueText(it.task.due)}${it.task.status === 'waiting' ? ' · <b>Your child says it\'s done</b>' : ''}</div>
+          <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+            <button class="btn good small" data-ok="${it.id}">✓ Done, check it in</button>
+            ${it.task.status === 'waiting' ? `<button class="btn small" data-no="${it.id}">Not yet</button>` : ''}
+          </div></div></div>`).join('') : '<p class="sub">No real-life tasks right now.</p>'}
+    </div>
+    <div class="section"><h3>In-game tasks</h3>
+      ${others.length ? others.map(it => `<div class="list-line"><span>${SP[it.sp].e} ${esc(taskLine(it.task))} · ${it.task.progress}/${it.task.target}</span><span class="sub">${dueText(it.task.due)}</span></div>`).join('') : '<p class="sub">None right now.</p>'}
+      <p class="sub">Level ${S.level} · ${S.monthCaught} of ${GOAL} caught this month · ${daysLeft()} days left · ${S.totalCaught} caught in all</p>
+    </div>
+    <div class="section"><h3>Real-life tasks the robot can give</h3>
+      <label class="toggle"><input type="checkbox" id="realOn" ${S.settings.real ? 'checked' : ''}> Include real-life tasks (about 1 in 3 animals)</label>
+      <div id="rlist">${S.settings.realList.map((t, i) => `<div class="list-line"><span>${esc(t)}</span><button class="btn small" data-del="${i}">✕</button></div>`).join('')}</div>
+      <div style="display:flex;gap:8px;margin-top:8px"><input type="text" id="newTask" placeholder="Add a task, e.g. Feed the dog" maxlength="80"><button class="btn primary small" id="addTask">Add</button></div>
+    </div>
+    <div class="section"><h3>Settings</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" id="chPin">Change PIN</button><button class="btn small" id="reset">Start the game over</button></div>
+    </div>
+    <div class="actions"><button class="btn primary" data-close>Done</button></div>`;
+  card.querySelectorAll('[data-ok]').forEach(b => b.onclick = () => {
+    const it = S.netted.find(x => x.id == b.dataset.ok); if (!it) return;
+    closeModal(); catchAnimal(it, true);
+  });
+  card.querySelectorAll('[data-no]').forEach(b => b.onclick = () => {
+    const it = S.netted.find(x => x.id == b.dataset.no); if (it) { it.task.status = 'todo'; save(); parentPanel(card); }
+  });
+  card.querySelector('#realOn').onchange = e => { S.settings.real = e.target.checked; save(); };
+  card.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { S.settings.realList.splice(+b.dataset.del, 1); save(); parentPanel(card); });
+  const add = () => { const v = card.querySelector('#newTask').value.trim(); if (v) { S.settings.realList.push(v); save(); parentPanel(card); } };
+  card.querySelector('#addTask').onclick = add;
+  card.querySelector('#newTask').onkeydown = e => { if (e.key === 'Enter') add(); };
+  card.querySelector('#chPin').onclick = () => setPin(card, true);
+  card.querySelector('#reset').onclick = e => {
+    const b = e.target;
+    if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = 'Tap again: erase all progress'; b.style.background = 'var(--bad)'; b.style.color = '#fff'; return; }
+    const pin = S.pin, settings = S.settings;
+    S = freshState(); S.pin = pin; S.settings = settings; S.introSeen = true;
+    save(); initEntities(); wildArrivals(); updateHud(); closeModal(); toast('New game started!');
+  };
+}
+
+/* ---------- Modal queue ---------- */
+const modalQ = []; let modalOpen = false;
+function showModal(build) { modalQ.push(build); if (!modalOpen) nextModal(); }
+function nextModal() {
+  const b = modalQ.shift();
+  const m = $('#modal'), card = $('#card');
+  if (!b) { modalOpen = false; m.hidden = true; card.innerHTML = ''; return; }
+  modalOpen = true; keys.clear();
+  card.className = 'card'; card.innerHTML = ''; card.scrollTop = 0;
+  m.hidden = false; void card.offsetWidth;
+  b(card);
+}
+function closeModal() { battle = null; nextModal(); }
+$('#card').addEventListener('click', e => { if (e.target.closest('[data-close]')) { sfx.click(); closeModal(); } });
+
+/* ---------- HUD ---------- */
+function updateHud() {
+  $('#hudLevel').textContent = 'Lv ' + S.level;
+  $('#hudMonth').textContent = `🐾 ${S.monthCaught} / ${GOAL} this month`;
+  const d = daysLeft(); $('#hudDays').textContent = d === 1 ? '1 day left' : d + ' days left';
+  $('#hudBar').style.width = Math.min(100, 100 * S.monthCaught / GOAL) + '%';
+  $('#hudGems').textContent = S.gems;
+  $('#netBasic').textContent = '🥅 ' + S.nets;
+  $('#netGold').textContent = '✨ ' + S.gold;
+  const gold = S.useGold && S.gold > 0;
+  $('#netBasic').classList.toggle('on', !gold);
+  $('#netGold').classList.toggle('on', gold);
+  const c = $('#hudTaskCount'); c.textContent = S.netted.length; c.hidden = S.netted.length === 0;
+  $('#btnSound').textContent = S.muted ? '🔇' : '🔊';
+}
+let toastTimer;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600); }
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+$('#btnTasks').onclick = () => { sfx.click(); openTasks(); };
+$('#btnBook').onclick = () => { sfx.click(); openBook(); };
+$('#btnParents').onclick = () => { sfx.click(); openParents(); };
+$('#btnSound').onclick = () => { S.muted = !S.muted; save(); updateHud(); sfx.click(); };
+$('#hudNets').onclick = () => {
+  if (S.gold <= 0) { S.useGold = false; toast('You have no Golden Nets. Buy one at the Store!'); }
+  else { S.useGold = !S.useGold; toast(S.useGold ? 'Next throw: ✨ Golden Net' : 'Next throw: 🥅 Net'); }
+  sfx.click(); save(); updateHud();
+};
+
+/* ---------- Input ---------- */
+const keys = new Set();
+let isTouch = false;
+const KEYMAP = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right' };
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (modalOpen) {
+    if (battle && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); if (!battle.over) battleHit(); else closeModal(); return; }
+    if (e.code === 'Escape') { closeModal(); return; }
+    if (e.code === 'Enter' || e.code === 'Space') { const p = $('#card [data-close].primary') || $('#card [data-close]'); if (p && !battle) { e.preventDefault(); p.click(); } }
+    return;
+  }
+  if (KEYMAP[e.code]) { keys.add(KEYMAP[e.code]); e.preventDefault(); }
+  if (e.code === 'Space' || e.code === 'KeyE' || e.code === 'Enter') { e.preventDefault(); if (!e.repeat) doAction(); }
+});
+addEventListener('keyup', e => { if (KEYMAP[e.code]) keys.delete(KEYMAP[e.code]); });
+addEventListener('blur', () => keys.clear());
+addEventListener('touchstart', () => { if (!isTouch) { isTouch = true; document.body.classList.add('touch'); } }, { passive: true });
+if (matchMedia('(pointer:coarse)').matches) { isTouch = true; document.body.classList.add('touch'); }
+document.querySelectorAll('.dpad button').forEach(b => {
+  const d = b.dataset.dir;
+  const on = e => { e.preventDefault(); keys.add(d); }, off = e => { e.preventDefault(); keys.delete(d); };
+  b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointerleave', off); b.addEventListener('pointercancel', off);
+});
+$('#abtn').addEventListener('pointerdown', e => { e.preventDefault(); if (battle) battleHit(); else doAction(); });
+
+/* ---------- Canvas ---------- */
+const cv = $('#game'), ctx = cv.getContext('2d');
+let VW = 0, VH = 0, DPR = 1;
+function resize() { DPR = Math.min(2, devicePixelRatio || 1); VW = innerWidth; VH = innerHeight; cv.width = VW * DPR; cv.height = VH * DPR; cv.style.width = VW + 'px'; cv.style.height = VH + 'px'; }
+addEventListener('resize', resize); resize();
+const EMOJI_FONT = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+function emoji(e, x, y, size) { ctx.fillStyle = '#000'; ctx.font = `${size}px ${EMOJI_FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, x, y); }
+function shadow(x, y, w) { ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.beginPath(); ctx.ellipse(x, y, w, w * 0.35, 0, 0, Math.PI * 2); ctx.fill(); }
+function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function label(text, x, y, bg = '#fffcf2', fg = '#1f2a1c') {
+  ctx.font = '700 14px "Atkinson Hyperlegible",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const w = ctx.measureText(text).width + 16;
+  roundRect(x - w / 2, y - 13, w, 26, 8); ctx.fillStyle = bg; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = '#2b3a26'; ctx.stroke();
+  ctx.fillStyle = fg; ctx.fillText(text, x, y + 1);
+}
+
+let time = 0;
+function drawTile(tx, ty, sx, sy) {
+  const v = tileAt(tx, ty);
+  const shade = ((tx * 7 + ty * 13) % 5 === 0);
+  ctx.fillStyle = shade ? '#7fc35f' : '#86c965';
+  ctx.fillRect(sx, sy, T, T);
+  if (v === PATH) { ctx.fillStyle = '#e6cf94'; ctx.fillRect(sx, sy, T, T); ctx.fillStyle = '#d8bf80'; ctx.fillRect(sx + 8, sy + 10, 5, 4); ctx.fillRect(sx + 30, sy + 30, 6, 4); }
+  else if (v === FLOWER) {
+    ctx.fillStyle = flowerColor[ty * MW + tx] || '#fff';
+    for (const [ox, oy] of [[12, 14], [32, 22], [20, 34]]) { ctx.beginPath(); ctx.arc(sx + ox, sy + oy, 3.5, 0, 7); ctx.fill(); }
+    ctx.fillStyle = '#ffd23f'; for (const [ox, oy] of [[12, 14], [32, 22], [20, 34]]) { ctx.beginPath(); ctx.arc(sx + ox, sy + oy, 1.4, 0, 7); ctx.fill(); }
+  }
+  else if (v === WATER) {
+    ctx.fillStyle = '#4ea7e6'; ctx.fillRect(sx, sy, T, T);
+    ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 2;
+    const o = Math.sin(time * 2 + tx + ty) * 4;
+    ctx.beginPath(); ctx.arc(sx + 16 + o, sy + 18, 6, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
+    ctx.beginPath(); ctx.arc(sx + 34 - o, sy + 34, 5, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
+  }
+  else if (v === TREE) {
+    ctx.fillStyle = '#7a5230'; ctx.fillRect(sx + T / 2 - 5, sy + T / 2 + 4, 10, 16);
+    ctx.fillStyle = '#2f7a35'; ctx.beginPath(); ctx.arc(sx + T / 2, sy + T / 2 - 2, 20, 0, 7); ctx.fill();
+    ctx.fillStyle = '#3f9443'; ctx.beginPath(); ctx.arc(sx + T / 2 - 6, sy + T / 2 - 8, 11, 0, 7); ctx.fill();
+  }
+}
+function drawStore(cx, cy) {
+  const x = STORE.x * T - cx, y = STORE.y * T - cy, w = STORE.w * T, h = STORE.h * T;
+  ctx.fillStyle = '#f6e3bf'; ctx.fillRect(x, y + 30, w, h - 30);
+  ctx.strokeStyle = '#2b3a26'; ctx.lineWidth = 3; ctx.strokeRect(x, y + 30, w, h - 30);
+  // roof
+  ctx.fillStyle = '#e0533d'; ctx.beginPath(); ctx.moveTo(x - 12, y + 40); ctx.lineTo(x + 24, y - 6); ctx.lineTo(x + w - 24, y - 6); ctx.lineTo(x + w + 12, y + 40); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.25)'; for (let i = 0; i < 6; i++) ctx.fillRect(x + 10 + i * (w / 6), y + 4, 14, 34);
+  // sign
+  roundRect(x + w / 2 - 70, y + 52, 140, 34, 8); ctx.fillStyle = '#fffcf2'; ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#1f2a1c'; ctx.font = '700 20px "Pixelify Sans",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('NET STORE', x + w / 2, y + 70);
+  // windows
+  ctx.fillStyle = '#9fd6ff'; ctx.fillRect(x + 22, y + 108, 50, 44); ctx.strokeRect(x + 22, y + 108, 50, 44);
+  ctx.fillRect(x + w - 72, y + 108, 50, 44); ctx.strokeRect(x + w - 72, y + 108, 50, 44);
+  emoji('🥅', x + 47, y + 132, 26);
+  // door
+  const dx = DOOR.x * T - cx, dy = DOOR.y * T - cy;
+  ctx.fillStyle = '#8a5a35'; ctx.fillRect(dx + 6, dy + 4, T - 12, T - 4); ctx.strokeRect(dx + 6, dy + 4, T - 12, T - 4);
+  ctx.fillStyle = '#ffd23f'; ctx.beginPath(); ctx.arc(dx + T - 16, dy + 28, 3, 0, 7); ctx.fill();
+}
+function drawCoopFence(cx, cy) {
+  const x = COOP.x * T - cx, y = COOP.y * T - cy, w = COOP.w * T, h = COOP.h * T;
+  ctx.strokeStyle = '#a0703f'; ctx.lineWidth = 4; ctx.setLineDash([14, 8]);
+  ctx.strokeRect(x + 4, y + 4, w - 8, h - 8); ctx.setLineDash([]);
+  ctx.fillStyle = '#c98a4b'; ctx.fillRect(x + w - 70, y + 14, 52, 38); ctx.fillStyle = '#9b3f2f';
+  ctx.beginPath(); ctx.moveTo(x + w - 76, y + 16); ctx.lineTo(x + w - 44, y - 4); ctx.lineTo(x + w - 12, y + 16); ctx.fill();
+  ctx.fillStyle = '#4a2c17'; ctx.fillRect(x + w - 52, y + 32, 16, 20);
+}
+
+function draw() {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const worldW = MW * T, worldH = MH * T;
+  let cx = worldW <= VW ? (worldW - VW) / 2 : Math.max(0, Math.min(worldW - VW, player.x - VW / 2));
+  let cy = worldH <= VH ? (worldH - VH) / 2 : Math.max(0, Math.min(worldH - VH, player.y - VH / 2));
+  cx = Math.round(cx); cy = Math.round(cy);
+  ctx.fillStyle = '#2f7a35'; ctx.fillRect(0, 0, VW, VH);
+  const tx0 = Math.max(0, Math.floor(cx / T)), ty0 = Math.max(0, Math.floor(cy / T));
+  const tx1 = Math.min(MW - 1, Math.ceil((cx + VW) / T)), ty1 = Math.min(MH - 1, Math.ceil((cy + VH) / T));
+  for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++) drawTile(tx, ty, tx * T - cx, ty * T - cy);
+  drawCoopFence(cx, cy);
+  drawStore(cx, cy);
+
+  // gems
+  for (const g of gems) {
+    const bob = Math.sin(time * 3 + g.t) * 3;
+    shadow(g.x - cx, g.y - cy + 12, 9);
+    emoji('💎', g.x - cx, g.y - cy - 2 + bob, 22);
+    if (Math.sin(time * 4 + g.t * 3) > 0.85) emoji('✨', g.x - cx + 10, g.y - cy - 14, 12);
+  }
+
+  // y-sorted sprites
+  const sprites = [];
+  animals.forEach(a => sprites.push({ y: a.y, d: () => {
+    const hop = Math.abs(Math.sin(time * 5 + a.hop)) * ((a.vx || a.vy) ? 6 : 1.5);
+    shadow(a.x - cx, a.y - cy + 14, 14);
+    ctx.save(); ctx.translate(a.x - cx, a.y - cy - hop);
+    if (a.vx > 0) ctx.scale(-1, 1);
+    emoji(SP[a.sp].e, 0, 0, 34); ctx.restore();
+  } }));
+  chickens.forEach(c => sprites.push({ y: c.y, d: () => {
+    shadow(c.x - cx, c.y - cy + 12, 11);
+    ctx.save(); ctx.translate(c.x - cx, c.y - cy - Math.abs(Math.sin(time * 6 + c.i)) * 2);
+    if (c.vx > 0) ctx.scale(-1, 1); emoji('🐔', 0, 0, 28); ctx.restore();
+    if (now() >= (S.chickenReady[c.i] || 0)) emoji('🥚', c.x - cx + 14, c.y - cy - 18, 12);
+  } }));
+  TRAINERS.forEach(t => {
+    const x = t.x * T + T / 2, y = t.y * T + T / 2;
+    sprites.push({ y, d: () => {
+      shadow(x - cx, y - cy + 15, 13);
+      emoji(t.e, x - cx, y - cy, 34);
+      const ready = now() >= (S.trainerReady[t.id] || 0);
+      if (ready) { const b = Math.sin(time * 4) * 2; label('!', x - cx, y - cy - 34 + b, '#ff7a3d', '#fff'); }
+      else emoji('💤', x - cx + 16, y - cy - 22, 16);
+      ctx.font = '700 12px "Atkinson Hyperlegible",sans-serif'; ctx.fillStyle = '#1f2a1c'; ctx.textAlign = 'center'; ctx.fillText(t.name, x - cx, y - cy + 28);
+    } });
+  });
+  sprites.push({ y: player.y, d: () => {
+    const moving = keys.size > 0;
+    shadow(player.x - cx, player.y - cy + 15, 13);
+    ctx.save(); ctx.translate(player.x - cx, player.y - cy - (moving ? Math.abs(Math.sin(time * 10)) * 4 : 0));
+    if (player.face < 0) ctx.scale(-1, 1);
+    emoji('🧒', 0, 0, 34); ctx.restore();
+  } });
+  sprites.sort((a, b) => a.y - b.y).forEach(s => s.d());
+
+  // net throw animation
+  if (anim) {
+    const p = Math.min(1, anim.t / 0.35);
+    const x = anim.fx + (anim.a.x - anim.fx) * p, y = anim.fy + (anim.a.y - anim.fy) * p - Math.sin(p * Math.PI) * 60;
+    ctx.save(); ctx.translate(x - cx, y - cy); ctx.rotate(p * 6);
+    emoji(anim.golden ? '✨' : '🥅', 0, 0, 30); ctx.restore();
+    if (p >= 1) {
+      const q = Math.min(1, (anim.t - 0.35) / 0.4);
+      const s = 1 + Math.sin(q * Math.PI * 3) * 0.25 * (1 - q);
+      ctx.save(); ctx.translate(anim.a.x - cx, anim.a.y - cy); ctx.scale(s, 1 / s);
+      emoji(anim.golden ? '✨' : '🥅', 0, -4, 46); ctx.restore();
+    }
+  }
+
+  // floating text
+  for (const f of floats) {
+    const a = 1 - f.t / 1.2;
+    ctx.globalAlpha = Math.max(0, a);
+    ctx.font = `700 ${f.size}px "Pixelify Sans",${EMOJI_FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.strokeText(f.text, f.x - cx, f.y - cy - f.t * 40);
+    ctx.fillStyle = f.color; ctx.fillText(f.text, f.x - cx, f.y - cy - f.t * 40);
+    ctx.globalAlpha = 1;
+  }
+
+  // interaction prompt
+  if (!modalOpen && !anim) {
+    const tg = getTarget();
+    if (tg) label(promptFor(tg), tg.x - cx, tg.y - cy - 46);
+  }
+}
+
+/* ---------- Loop ---------- */
+let last = performance.now(), tick = 0;
+function update(dt) {
+  time += dt;
+  if (!modalOpen && !anim) {
+    let dx = 0, dy = 0;
+    if (keys.has('left')) dx--; if (keys.has('right')) dx++;
+    if (keys.has('up')) dy--; if (keys.has('down')) dy++;
+    if (dx || dy) {
+      const l = Math.hypot(dx, dy), sp = 175 * dt;
+      const nx = player.x + dx / l * sp, ny = player.y + dy / l * sp;
+      if (passablePx(nx, player.y, player.r)) player.x = nx;
+      if (passablePx(player.x, ny, player.r)) player.y = ny;
+      if (dx) player.face = dx;
+    }
+    for (let i = gems.length - 1; i >= 0; i--) {
+      const g = gems[i];
+      if (Math.hypot(g.x - player.x, g.y - player.y) < 30) {
+        gems.splice(i, 1); S.gems++; sfx.gem();
+        floats.push({ x: g.x, y: g.y - 20, text: '+1 💎', t: 0, color: '#2f9fe8', size: 20 });
+        addProgress('gems');
+      }
+    }
+  }
+  animals.forEach(a => { if (!anim || anim.a !== a) wander(a, dt, 32, null); });
+  chickens.forEach(c => wander(c, dt, 26, COOP));
+  gemTimer += dt;
+  if (gemTimer > 12 && gems.length < 9) { gemTimer = 0; spawnGem(); }
+  floats.forEach(f => f.t += dt); floats = floats.filter(f => f.t < 1.2);
+  if (anim) { anim.t += dt; if (anim.t > 0.8) { const a = anim; anim = null; finishNet(a.a, a.golden); } }
+  if (battle) updateBattle(dt);
+  tick += dt; if (tick > 1) { tick = 0; checkTimers(); }
+}
+function loop(t) {
+  const dt = Math.min(0.05, (t - last) / 1000); last = t;
+  update(dt); draw();
+  requestAnimationFrame(loop);
+}
+
+/* ---------- Start ---------- */
+initEntities();
+wildArrivals();
+checkTimers();
+updateHud();
+if (!S.introSeen) {
+  showModal(card => {
+    card.innerHTML = `
+      <h2 class="center">Net Quest</h2>
+      <div class="big">🥅🐰</div>
+      <p><b>Animals live in the meadow.</b> Walk up to one and throw a net (<b>Space</b>, or the <b>A</b> button on a tablet). <b>BOING!</b></p>
+      <div class="robot"><div class="face">🤖</div><div>Then I give you a <b>task</b> and a <b>due date</b>. Finish the task in time and you catch the animal!</div></div>
+      <p>Tasks can be finding gems 💎, winning battles ⚔️, getting gem eggs from chickens 🐔, or real-life jobs 🏠 that a grown-up checks in.</p>
+      <p><b>Catch ${GOAL} animals in one month to level up!</b> Buy more nets at the Net Store 🏪.</p>
+      <p class="sub">Move with the arrow keys or WASD.</p>
+      <div class="actions"><button class="btn primary" data-close>Start!</button></div>`;
+    S.introSeen = true; save();
+  });
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

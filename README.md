@@ -7,6 +7,7 @@ Browser games built with Claude, published as a GitHub Pages site.
 | Game | Folder |
 |---|---|
 | Wildgrove Tamers | [`wildgrove-tamers/`](wildgrove-tamers/) |
+| Net Quest | [`net-quest/`](net-quest/) |
 
 ## Other (not games)
 
