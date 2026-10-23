@@ -241,7 +241,7 @@ const TELEPORTS = [];
 /* The Boss waits in Sunny Meadow. Beat all 9 gyms to get in; beat the Boss to earn the 6 locker keys. */
 const BOSS = {id:'boss', leader:'Boss Rowan', type:'PLAIN', color:'#3a2f4f', boss:true,
   intro:'Nine badges... so you are the one everyone is talking about. My team has never lost. Prove me wrong!',
-  team:[['infernox',31],['megafin',31],['voltwasp',32],['glaciorn',32],['phantomire',33],['bouldertusk',34]]};
+  team:[['infernox',100],['megafin',100],['voltwasp',100],['glaciorn',100],['phantomire',100],['bouldertusk',100]]};
 /* Six lockers sealed deep underground, each holding a legendary creature */
 const LOCKERS = [
   {id:'L1', sp:'solarion'}, {id:'L2', sp:'abyssalor'}, {id:'L3', sp:'verdantus'},
@@ -258,23 +258,23 @@ const SHOP_ITEMS = [
 /* Gyms: a leader with a team of strong creatures waits inside each one */
 const GYMS = [
   {id:'meadow', c:0, r:0, leader:'Leader Poppy', type:'PLAIN', badge:'Meadow Badge', reward:[3, 2],
-   intro:'Welcome, new tamer! Every journey starts in the meadow. Show me your bond!', team:[['fluffin',7],['snoozel',8]]},
+   intro:'Welcome, new tamer! Every journey starts in the meadow. Show me your bond!', team:[['fluffin',100],['snoozel',100]]},
   {id:'spark', c:1, r:0, leader:'Leader Volta', type:'SPARK', badge:'Spark Badge', reward:[4, 3],
-   intro:'Bzzt! My team is fully charged. Can you keep up?', team:[['buzzbit',10],['ampurr',11],['zaplet',12]]},
+   intro:'Bzzt! My team is fully charged. Can you keep up?', team:[['buzzbit',100],['ampurr',100],['zaplet',100]]},
   {id:'leaf', c:0, r:1, leader:'Leader Fern', type:'BLOOM', badge:'Leaf Badge', reward:[5, 3],
-   intro:'The thicket is my home. Let us see if you can grow here!', team:[['thornback',12],['cappuff',13],['bramblett',15]]},
+   intro:'The thicket is my home. Let us see if you can grow here!', team:[['thornback',100],['cappuff',100],['bramblett',100]]},
   {id:'ripple', c:2, r:0, leader:'Leader Marin', type:'TIDE', badge:'Ripple Badge', reward:[6, 4],
-   intro:'The marsh tide waits for no one. Hope you can swim!', team:[['shellbok',15],['jellune',16],['tidalfin',18]]},
+   intro:'The marsh tide waits for no one. Hope you can swim!', team:[['shellbok',100],['jellune',100],['tidalfin',100]]},
   {id:'dusk', c:1, r:1, leader:'Leader Raven', type:'SHADE', badge:'Dusk Badge', reward:[6, 4],
-   intro:'The orchard gets spooky after dark. My shadows will find you!', team:[['gloomlet',16],['nightmask',17],['duskbat',17],['phantomire',19]]},
+   intro:'The orchard gets spooky after dark. My shadows will find you!', team:[['gloomlet',100],['nightmask',100],['duskbat',100],['phantomire',100]]},
   {id:'ridge', c:0, r:2, leader:'Leader Flint', type:'STONE', badge:'Ridge Badge', reward:[7, 4],
-   intro:'Solid as a rock! Nothing gets past my wall of stone.', team:[['rockhog',17],['gemshell',18],['clodhorn',18],['bouldertusk',20]]},
+   intro:'Solid as a rock! Nothing gets past my wall of stone.', team:[['rockhog',100],['gemshell',100],['clodhorn',100],['bouldertusk',100]]},
   {id:'cinder', c:1, r:2, leader:'Leader Ash', type:'EMBER', badge:'Cinder Badge', reward:[8, 5],
-   intro:'Feel that heat? My team was raised beside the lava pools.', team:[['emberwick',18],['magmole',19],['blazepup',19],['cindrake',21]]},
+   intro:'Feel that heat? My team was raised beside the lava pools.', team:[['emberwick',100],['magmole',100],['blazepup',100],['cindrake',100]]},
   {id:'cloud', c:2, r:1, leader:'Leader Skye', type:'GALE', badge:'Cloud Badge', reward:[8, 5],
-   intro:'Up on the bluffs the wind is wild and icy. Hold on tight!', team:[['shiverwing',20],['breezlet',21],['glaciorn',22],['galeon',23]]},
+   intro:'Up on the bluffs the wind is wild and icy. Hold on tight!', team:[['shiverwing',100],['breezlet',100],['glaciorn',100],['galeon',100]]},
   {id:'crown', c:2, r:2, leader:'Champion Quartz', type:'SPARK', badge:'Prism Crown', reward:[10, 6], champion:true,
-   intro:'Only the strongest tamers climb Crystal Peak. Show me everything!', team:[['clodhorn',23],['slumbuck',24],['tundrox',24],['voltcoil',25],['glimmite',27]]}
+   intro:'Only the strongest tamers climb Crystal Peak. Show me everything!', team:[['clodhorn',100],['slumbuck',100],['tundrox',100],['voltcoil',100],['glimmite',100]]}
 ];
 const ZONES = [
   {n:'Sunny Meadow', min:2, max:4, list:['snoozel','zaplet','wisplume','mossnub','puffwisp','fluffin','petalbud','buzzbit'], rare:['cappuff','blazepup'], ground:'#86b56e', biome:'meadow'},
@@ -2240,7 +2240,7 @@ async function startTrainerBattle(npc) {
   B.busy = false; renderActions();
 }
 async function startGymBattle(gym) {
-  const team = gym.team.map(([sp, lv]) => makeMon(sp, lv));
+  const team = gym.team.map(([sp, lv]) => { let e; while ((e = SP[sp].evo) && lv >= e[1]) sp = e[0]; return makeMon(sp, lv); });   // gym creatures show up in the form that fits their level
   team.forEach(m => markSeen(m.sp));
   B = {foe: team[0], trainer:{name: gym.leader, gym, team, idx:0, color: gym.color || TYPES[gym.type].c}, act: Math.max(0, firstAlive()), menu:'main', busy:true, forced:false, shake:null, orb:null, hideFoe:true, hideMe:true};
   setMode('battle'); renderActions();
