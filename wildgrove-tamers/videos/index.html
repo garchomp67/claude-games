@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wildgrove Tamers Videos</title>
+<meta name="description" content="Wildgrove Tamers videos from Boulder Rock Smash: an AI battles the legendary Blizzaron, and where to find all 12 Mega Stones.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: a header with the channel name and a back link, then one card per video (player on top, title and notes below) */
+:root{
+  --bg:#2b2540; --deep:#1f1a30; --edge:#3e3658; --panel:#f3efe6; --ink:#2b2540; --muted:#a59dbd; --accent:#f2a541;
+  --display:'Pixelify Sans', ui-monospace, 'Courier New', monospace;
+  --body:'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--panel)}
+body{font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:20px 48px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(1.8rem,6vw,2.6rem);line-height:1.05;margin:0;color:var(--accent);text-wrap:balance}
+.channel{display:inline-block;margin-top:8px;font-family:var(--display);background:var(--accent);color:var(--ink);border-radius:999px;padding:2px 14px;font-size:.95rem}
+.back{font-family:var(--display);color:var(--panel);text-decoration:none;border:2px solid var(--edge);border-radius:8px;padding:6px 14px;white-space:nowrap}
+.back:hover,.back:focus-visible{border-color:var(--accent);outline:none}
+.list{display:grid;gap:26px}
+.vid{background:var(--deep);border:3px solid var(--edge);border-radius:14px;overflow:hidden}
+video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.info{padding:14px 18px 18px}
+.info h2{font-family:var(--display);font-weight:700;font-size:1.35rem;margin:0 0 4px}
+.info p{margin:0;color:var(--muted)}
+.len{font-family:var(--display);font-size:.85rem;color:var(--accent);margin-left:6px}
+footer{margin-top:30px;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Wildgrove Tamers Videos</h1>
+      <span class="channel">Boulder Rock Smash</span>
+    </div>
+    <a class="back" href="../">◀ Back to the game</a>
+  </header>
+  <main class="list">
+    <article class="vid">
+      <video controls preload="metadata" playsinline poster="ai-vs-the-legendary.jpg" src="ai-vs-the-legendary.mp4"></video>
+      <div class="info">
+        <h2>AI vs the Legendary <span class="len">0:44</span></h2>
+        <p>Can the AI beat Blizzaron, the Level 500 legendary at the top of Frostspire Mountain? Watch it Mega Evolve and go for the catch!</p>
+      </div>
+    </article>
+    <article class="vid">
+      <video controls preload="metadata" playsinline poster="where-are-all-12-mega-stones.jpg" src="where-are-all-12-mega-stones.mp4"></video>
+      <div class="info">
+        <h2>Where Are All 12 Mega Stones? <span class="len">1:43</span></h2>
+        <p>Every hidden Mega Stone in the game, with a treasure map for each one. Tip: hidden items twinkle on the ground!</p>
+      </div>
+    </article>
+  </main>
+  <footer>Your game progress is saved, so you can go back and keep playing anytime.</footer>
+</div>
+</body>
+</html>

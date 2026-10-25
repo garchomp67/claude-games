@@ -142,7 +142,7 @@ canvas#screen:focus{outline:none}
       <h1>Wildgrove Tamers</h1>
       <p class="sub">Catch, battle and raise the creatures of the grove</p>
     </div>
-    <div class="hdrbtns"><a class="ghost" href="../" style="text-decoration:none">All games</a><select id="langSel" class="ghost langsel" aria-label="Language / 語言"><option value="en">English</option><option value="hant">繁體中文</option><option value="hans">简体中文</option></select><button class="ghost" id="newGame" type="button">New game</button></div>
+    <div class="hdrbtns"><a class="ghost" href="../" style="text-decoration:none">All games</a><a class="ghost" id="videosBtn" href="videos/" style="text-decoration:none">Videos</a><select id="langSel" class="ghost langsel" aria-label="Language / 語言"><option value="en">English</option><option value="hant">繁體中文</option><option value="hans">简体中文</option></select><button class="ghost" id="newGame" type="button">New game</button></div>
   </header>
 
   <div class="screen">
@@ -2609,6 +2609,7 @@ TPL_SRC.push("^(\\d+) Super Berries$"); I18N.hant.tpl.push("$1 個超級果實")
 TPL_SRC.push("^(\\d+) Revive Seeds$"); I18N.hant.tpl.push("$1 個復活種子"); I18N.hans.tpl.push("$1 个复活种子");
 TPL_SRC.push("^(\\d+) Capture Orbs$"); I18N.hant.tpl.push("$1 個捕獸球"); I18N.hans.tpl.push("$1 个捕兽球");
 TPL_SRC.push("^(\\d+) coins$"); I18N.hant.tpl.push("$1 枚金幣"); I18N.hans.tpl.push("$1 枚金币");
+I18N.hant.exact["Videos"] = "影片"; I18N.hans.exact["Videos"] = "视频";
 const TPL_RE = TPL_SRC.map(s => new RegExp(s));
 const TR_CACHE = {hant: new Map(), hans: new Map()};
 const NAME_MAP = {hant: null, hans: null};
