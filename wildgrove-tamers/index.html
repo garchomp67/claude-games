@@ -132,6 +132,10 @@ canvas#screen:focus{outline:none}
 .langsel{font-family:var(--body);font-size:.85rem;background:transparent;cursor:pointer}
 .langsel option{color:#2b2540;background:#f3efe6}
 @media (max-width:380px){.dpad{grid-template-columns:repeat(3,40px);grid-template-rows:repeat(3,40px)}}
+.vidbtn{background:var(--accent)!important;color:var(--ink)!important;border-color:var(--accent)!important;font-weight:700;box-shadow:0 3px 0 #b8742a;animation:vidpulse 2.4s ease-in-out infinite}
+.vidbtn:hover,.vidbtn:focus-visible{filter:brightness(1.08)}
+@keyframes vidpulse{0%,100%{transform:none}50%{transform:translateY(-2px)}}
+@media (prefers-reduced-motion: reduce){.vidbtn{animation:none}}
 </style>
 </head>
 <body>
@@ -142,7 +146,7 @@ canvas#screen:focus{outline:none}
       <h1>Wildgrove Tamers</h1>
       <p class="sub">Catch, battle and raise the creatures of the grove</p>
     </div>
-    <div class="hdrbtns"><a class="ghost" href="../" style="text-decoration:none">All games</a><a class="ghost" id="videosBtn" href="videos/" style="text-decoration:none">Videos</a><select id="langSel" class="ghost langsel" aria-label="Language / 語言"><option value="en">English</option><option value="hant">繁體中文</option><option value="hans">简体中文</option></select><button class="ghost" id="newGame" type="button">New game</button></div>
+    <div class="hdrbtns"><a class="ghost" href="../" style="text-decoration:none">All games</a><a class="ghost vidbtn" id="videosBtn" href="videos/" style="text-decoration:none">▶ Videos</a><select id="langSel" class="ghost langsel" aria-label="Language / 語言"><option value="en">English</option><option value="hant">繁體中文</option><option value="hans">简体中文</option></select><button class="ghost" id="newGame" type="button">New game</button></div>
   </header>
 
   <div class="screen">
@@ -2548,7 +2552,7 @@ function buildStarters() {
     b.appendChild(c);
     b.insertAdjacentHTML('beforeend', `<span>${SP[k].n}</span><small>${TYPES[SP[k].t].n} type</small>`);
     b.addEventListener('click', () => {
-      S.party = [makeMon(k, 5)]; markCaught(k); S.tripCrystal = true; S.tripBoss = true; S.keysBack = true; S.lv100 = true; S.giftMega = true; S.blizzBack = true; S.layer = 'over'; S.px = START[0]; S.py = START[1]; S.mapVer = MAP_VER; S.dir = 'down'; snapCam();
+      S.party = [makeMon(k, 5)]; markCaught(k); S.tripCrystal = true; S.tripBoss = true; S.keysBack = true; S.lv100 = true; S.giftMega = true; S.giftTypeTeam = true; S.blizzBack = true; S.layer = 'over'; S.px = START[0]; S.py = START[1]; S.mapVer = MAP_VER; S.dir = 'down'; snapCam();
       setMode('map'); $('#hint').textContent = `${SP[k].n} is ready! Walk into the dark tall grass to find wild creatures.`; save();
     });
     wrap.appendChild(b); cards.push([c, k]);
@@ -2609,7 +2613,7 @@ TPL_SRC.push("^(\\d+) Super Berries$"); I18N.hant.tpl.push("$1 個超級果實")
 TPL_SRC.push("^(\\d+) Revive Seeds$"); I18N.hant.tpl.push("$1 個復活種子"); I18N.hans.tpl.push("$1 个复活种子");
 TPL_SRC.push("^(\\d+) Capture Orbs$"); I18N.hant.tpl.push("$1 個捕獸球"); I18N.hans.tpl.push("$1 个捕兽球");
 TPL_SRC.push("^(\\d+) coins$"); I18N.hant.tpl.push("$1 枚金幣"); I18N.hans.tpl.push("$1 枚金币");
-I18N.hant.exact["Videos"] = "影片"; I18N.hans.exact["Videos"] = "视频";
+I18N.hant.exact["Videos"] = "影片"; I18N.hans.exact["Videos"] = "视频"; I18N.hant.exact["▶ Videos"] = "▶ 影片"; I18N.hans.exact["▶ Videos"] = "▶ 视频";
 const TPL_RE = TPL_SRC.map(s => new RegExp(s));
 const TR_CACHE = {hant: new Map(), hans: new Map()};
 const NAME_MAP = {hant: null, hans: null};
@@ -2741,7 +2745,18 @@ function start(data) {
     S.mega = (S.mega || 0) + 1;
     setTimeout(() => { $('#hint').textContent = 'You got a Mega Stone! Open Team & Box and tap Mega Evolve on a fully evolved creature, or use it from the Bag in a battle.'; renderStatus(); }, 1200);
   }
-  S.giftMega = true; save();
+  S.giftMega = true;
+  // one-time gift: a "perfect type team" that hits 9 of the 10 types super effectively (nothing beats Plain).
+  // The strongest fully evolved creature of each type joins at Lv 100; the old team waits in the Grove Box.
+  if (false && !S.giftTypeTeam && S.party.length) {
+    const TEAM_TYPES = ['EMBER', 'TIDE', 'BLOOM', 'SPARK', 'STONE', 'SHADE'];
+    const pickBest = t => Object.keys(SP).filter(k => SP[k].t === t && !SP[k].evo && !SP[k].legend && !SP[k].megaOf)
+      .sort((a, b) => SP[b].b.reduce((x, y) => x + y, 0) - SP[a].b.reduce((x, y) => x + y, 0))[0];
+    const team = TEAM_TYPES.map(t => makeMon(pickBest(t), 100));
+    S.box = [...S.party, ...S.box]; S.party = team; team.forEach(m => markCaught(m.sp));
+    setTimeout(() => { $('#hint').textContent = `Your perfect type team is here: ${team.map(m => nm(m)).join(', ')}! Your old team is safe in the Grove Box.`; renderStatus(); }, 1500);
+  }
+  S.giftTypeTeam = true; save();
   requestAnimationFrame(frame);
   grabFocus(); setTimeout(showFocus, 300);
 }
