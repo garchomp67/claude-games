@@ -136,6 +136,12 @@ canvas#screen:focus{outline:none}
 .vidbtn:hover,.vidbtn:focus-visible{filter:brightness(1.08)}
 @keyframes vidpulse{0%,100%{transform:none}50%{transform:translateY(-2px)}}
 @media (prefers-reduced-motion: reduce){.vidbtn{animation:none}}
+.fcode{font-family:var(--display);font-size:1.5rem;color:var(--ink);background:#fbf8f1;border:2px solid #d6cdbb;border-radius:8px;padding:4px 12px;display:inline-block;margin:4px 0;letter-spacing:.04em}
+.frow{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.frow input{flex:1;min-width:0;font-family:var(--display);font-size:1rem;padding:6px 10px;border:2px solid #d6cdbb;border-radius:6px;background:#fff;color:var(--ink);text-transform:uppercase}
+#shareSel{font-family:var(--body);font-size:1rem;padding:6px;border:2px solid #d6cdbb;border-radius:6px;max-width:100%}
+.qrbox{background:#fff;display:inline-block;padding:6px;border-radius:8px;border:2px solid #d6cdbb;margin-top:6px}
+.qrbox svg{display:block;width:200px;height:200px}
 </style>
 </head>
 <body>
@@ -167,11 +173,16 @@ canvas#screen:focus{outline:none}
         <span></span><button type="button" data-d="down" aria-label="Down">▼</button><span></span>
       </div>
       <div class="status">
-        <div class="counts"><span class="coin" id="coinCount">Coins 0</span><span id="orbCount">Orbs 0</span><span id="berryCount">Berries 0</span><span id="badgeCount">Badges 0/9</span><span class="coin" id="keyCount" hidden>Keys 0</span><span class="coin" id="megaCount" hidden>Mega Stones 0</span><button type="button" class="logbtn" id="dexCount" aria-expanded="false" aria-controls="dex">Grove Log 0/605</button><button type="button" class="logbtn" id="mapBtn" aria-pressed="false">Big map</button><button type="button" class="logbtn" id="boxBtn" aria-expanded="false" aria-controls="boxDeck">Team &amp; Box</button><button type="button" class="logbtn" id="typeBtn" aria-expanded="false" aria-controls="typeChart">Type chart</button></div>
+        <div class="counts"><span class="coin" id="coinCount">Coins 0</span><span id="orbCount">Orbs 0</span><span id="berryCount">Berries 0</span><span id="badgeCount">Badges 0/9</span><span class="coin" id="keyCount" hidden>Keys 0</span><span class="coin" id="megaCount" hidden>Mega Stones 0</span><button type="button" class="logbtn" id="dexCount" aria-expanded="false" aria-controls="dex">Grove Log 0/605</button><button type="button" class="logbtn" id="mapBtn" aria-pressed="false">Big map</button><button type="button" class="logbtn" id="friendsBtn" aria-expanded="false" aria-controls="friendsDeck">Friends</button><button type="button" class="logbtn" id="boxBtn" aria-expanded="false" aria-controls="boxDeck">Team &amp; Box</button><button type="button" class="logbtn" id="typeBtn" aria-expanded="false" aria-controls="typeChart">Type chart</button></div>
         <div class="team" id="team"></div>
         <p class="hint" id="hint">Walk into the dark tall grass to find wild creatures. The blue spring heals your team.</p>
       </div>
     </div>
+  </section>
+
+  <section class="deck" id="friendsDeck" hidden>
+    <div class="dexhead"><h2>Friends</h2></div>
+    <div id="friendsBody"></div>
   </section>
 
   <section class="deck" id="boxDeck" hidden>
@@ -219,6 +230,9 @@ canvas#screen:focus{outline:none}
   <p class="help">Move with the arrow keys, <kbd>WASD</kbd>, or the pad. Tap the little map in the corner (or press <kbd>M</kbd>) to see the whole world. Follow the dirt paths through gaps in the trees to reach new areas; the minimap shows where you are. Weaken a wild creature before throwing an orb to raise your catch odds. Step into a gym's door to challenge its leader, or climb down the hole beside it to explore the caves. Step into a purple teleport hole to travel anywhere fast. Walk into a trainer with a red ! to battle for coins, then spend them at the blue-striped shops. Walk into a crystal to smash it for coins. Watch for tiny twinkles on the ground: hidden items (even Mega Stones!) are waiting to be found. Swim in lakes and ponds to find water creatures. Walk into a lava pool in Ember Hollow and its bubbles will teleport you to Lava Island. Climb Frostspire Mountain on Crystal Peak to reach a legendary at the top. Win all 9 badges to open the BOSS building in Sunny Meadow.</p>
 </div>
 
+<script>/* QR Code Generator for JavaScript, Copyright (c) 2009 Kazuhiko Arase, MIT license */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1})},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}(function(){return qrcode});
+</script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
@@ -627,18 +641,18 @@ const cam = {x: 0, y: 0};
 
 /* Hidden items: invisible except for a tiny twinkle now and then. Step on one to pick it up. 9 of them are Mega Stones in tucked-away corners. */
 const HIDDEN = (() => {
-  const R = mulberry32(4242), out = [], taken = new Set();
+  const R = mulberry32(4242), out = [], taken = new Set(); let rnd = R;
   const maps = {over: [MAP, MW, MH, '.'], cave: [CAVE, CW, CH, ','], island: [ISLAND, IW, IH, '.'], mountain: [MTN, MTW, MTH, '.']};
   const BLK = new Set([...WALK_BLOCK, 'l', 'V', 'w']);
   const tucked = (M, x, y) => [[1,0],[-1,0],[0,1],[0,-1]].filter(([dx, dy]) => BLK.has((M[y + dy] || '')[x + dx] || 'T')).length;   // walls around it
   function place(layer, item, n, x0, y0, x1, y1, wantTucked) {
     const [M, W, H, floor] = maps[layer];
     for (let k = 0, tries = 0; k < n && tries < 20000; tries++) {
-      const x = x0 + Math.floor(R()*(Math.min(x1, W - 2) - x0)), y = y0 + Math.floor(R()*(Math.min(y1, H - 2) - y0));
+      const x = x0 + Math.floor(rnd()*(Math.min(x1, W - 2) - x0)), y = y0 + Math.floor(rnd()*(Math.min(y1, H - 2) - y0));
       if (M[y][x] !== floor || taken.has(layer + x + ',' + y)) continue;
       const need = wantTucked && tries < 15000 ? (tries < 8000 ? 3 : 2) : 0;
       if (tucked(M, x, y) < need) continue;
-      taken.add(layer + x + ',' + y); out.push({id: layer.charAt(0) + ':' + x + ',' + y, layer, x, y, item, phase: R()*6.3}); k++;
+      taken.add(layer + x + ',' + y); out.push({id: layer.charAt(0) + ':' + x + ',' + y, layer, x, y, item, phase: rnd()*6.3}); k++;
     }
   }
   const COMMON = [['great', 2], ['superb', 2], ['revive', 1], ['orbs', 5], ['coins', 0]];
@@ -651,17 +665,19 @@ const HIDDEN = (() => {
   place('island', ['mega', 1], 1, 1, 1, IW, IH, true); place('island', ['superb', 3], 1, 1, 1, IW, IH); place('island', ['coins', 0], 2, 1, 1, IW, IH);
   place('mountain', ['mega', 1], 1, 1, 1, MTW, 30, true); place('mountain', ['great', 3], 1, 1, 30, MTW, MTH); place('mountain', ['revive', 2], 1, 1, 1, MTW, MTH); place('mountain', ['coins', 0], 2, 1, 1, MTW, MTH);
   out.forEach(h => { if (h.item[0] === 'coins') h.item = ['coins', 150 + Math.floor(R()*7)*50]; });
+  rnd = mulberry32(7777);
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) place('over', ['mega', 1], 2, c*RW + 4, r*RH + 4, (c + 1)*RW - 4, (r + 1)*RH - 4, true);
   return out;
 })();
 const HIDDEN_NAMES = {mega: ['Mega Stone', 'Mega Stones'], great: ['Great Orb', 'Great Orbs'], superb: ['Super Berry', 'Super Berries'], revive: ['Revive Seed', 'Revive Seeds'], orbs: ['Capture Orb', 'Capture Orbs']};
 function hiddenAt(x, y) { const id = S.layer.charAt(0) + ':' + x + ',' + y; return HIDDEN.find(h => h.id === id && !(S.found || []).includes(h.id)); }
 function pickHidden(h) {
   S.found = [...(S.found || []), h.id];
-  const [k, q] = h.item, label = k === 'coins' ? `${q} coins` : q > 1 ? `${q} ${HIDDEN_NAMES[k][1]}` : HIDDEN_NAMES[k][0];
-  S[k] = (S[k] || 0) + q;
+  const [k, q] = h.item, label = k === 'stone' ? stoneName(q) : k === 'coins' ? `${q} coins` : q > 1 ? `${q} ${HIDDEN_NAMES[k][1]}` : HIDDEN_NAMES[k][0];
+  if (k === 'stone') giveStone(q); else S[k] = (S[k] || 0) + q;
   const n = S.found.filter(id => HIDDEN.some(x => x.id === id)).length;
-  for (let i = 0; i < 24; i++) { const a = Math.random()*Math.PI*2, v = 1 + Math.random()*3; sparks.push({x: h.x*TS + 16, y: h.y*TS + 16, vx: Math.cos(a)*v, vy: Math.sin(a)*v - 1.5, life: 1, col: k === 'mega' ? ['#ff6ad5','#9a5fff','#5ad1ff','#ffe14a'][i % 4] : ['#fff6c0','#ffd35a','#ffffff','#7fd0e8'][i % 4]}); }
-  $('#hint').textContent = k === 'mega' ? `WOW!!! You found a hidden MEGA STONE! Open Team & Box to Mega Evolve a fully evolved creature. (${n} of ${HIDDEN.length} hidden items found)`
+  for (let i = 0; i < 24; i++) { const a = Math.random()*Math.PI*2, v = 1 + Math.random()*3; sparks.push({x: h.x*TS + 16, y: h.y*TS + 16, vx: Math.cos(a)*v, vy: Math.sin(a)*v - 1.5, life: 1, col: k === 'stone' ? ['#ff6ad5','#9a5fff','#5ad1ff','#ffe14a'][i % 4] : ['#fff6c0','#ffd35a','#ffffff','#7fd0e8'][i % 4]}); }
+  $('#hint').textContent = k === 'stone' ? `WOW!!! You found a hidden ${stoneName(q)}! It lets ${SP[q].n} Mega Evolve. (${n} of ${HIDDEN.length} hidden items found)`
                                         : `You found a hidden item: ${label}! (${n} of ${HIDDEN.length} hidden items found)`;
   renderStatus();
 }
@@ -996,10 +1012,22 @@ const MT_ZONES = (() => {
 /* Legendaries are super big and super strong */
 Object.values(SP).filter(v => v.legend).forEach(v => { v.b = v.b.map(x => Math.round(x*1.5)); v.sz = 1.45; });
 
-/* Mega Evolution: every fully evolved creature has a Mega form, unlocked forever with a super rare Mega Stone */
+/* Mega Evolution: 80 special creatures can Mega Evolve. Each one needs its own Mega Stone (Pyrewyrm needs a Pyrewyrmite). */
+const MEGA_LIST = (() => {
+  const finals = Object.keys(SP).filter(k => !SP[k].evo && !SP[k].legend);
+  const sum = k => SP[k].b.reduce((a, b) => a + b, 0);
+  const hand = finals.filter(k => !SP[k].fam);
+  const team = ['EMBER', 'TIDE', 'BLOOM', 'SPARK', 'STONE', 'SHADE'].map(t => finals.filter(k => SP[k].t === t).sort((a, b) => sum(b) - sum(a))[0]);
+  const fam = finals.filter(k => SP[k].fam).sort((a, b) => sum(b) - sum(a));
+  const out = [...new Set([...hand, ...team])], types = Object.keys(TYPES);
+  for (let ti = 0, guard = 0; out.length < 80 && guard < 5000; guard++) { const t = types[ti++ % types.length]; const k = fam.find(x => SP[x].t === t && !out.includes(x)); if (k) out.push(k); }
+  ['x_moltaara'].forEach(k => { if (SP[k] && !out.includes(k)) out.push(k); });   // extra Megas players asked for
+  return out;
+})();
+const MEGA_SET = new Set(MEGA_LIST);
 (() => {
   const POWER = ['mightyhorns', 'muscle', 'armor', 'spikemane', 'greatwings', 'tailspike', 'legs'];
-  Object.keys(SP).filter(k => !SP[k].evo && !SP[k].legend).forEach((k, i) => {
+  MEGA_LIST.forEach((k, i) => {
     const v = SP[k], extra = POWER.filter(f => !v.f.includes(f)), add = [extra[i % extra.length], extra[(i*3 + 1) % extra.length], extra[(i*5 + 2) % extra.length]];
     const bigMove = [MOVE_TIERS[v.t][2], 'megaslam', MOVE_TIERS[['EMBER','TIDE','SPARK','SHADE','FROST','STONE'][i % 6]][2]].find(m => m && !v.learn.some(l => l[1] === m)) || 'megaslam';
     SP['mega_' + k] = {n: 'Mega ' + v.n, t: v.t, b: v.b.map(x => Math.round(x*1.35)), col: shade(hueShift(v.col, 16, 0.18), -0.15), c2: v.c2 || '#ffd35a',
@@ -1008,6 +1036,22 @@ Object.values(SP).filter(v => v.legend).forEach(v => { v.b = v.b.map(x => Math.r
     v.mega = 'mega_' + k;
   });
 })();
+const stoneName = k => SP[k].n.replace(/[aeiouy]+$/i, '') + 'ite';
+/* Where each stone comes from: each gym and the Boss give one, each shop sells one, 30 are hidden in the world, and the rest come rarely from crystals */
+const STONE_SRC = {}, GYM_STONE = {}, SHOP_STONE = [], CRYSTAL_STONES = [];
+(() => {
+  const free = MEGA_LIST.slice(), take = pred => { const i = free.findIndex(pred); return free.splice(i >= 0 ? i : 0, 1)[0]; };
+  [...GYMS, BOSS].forEach(g => { const k = take(x => SP[x].t === g.type); GYM_STONE[g.id] = k; STONE_SRC[k] = `prize from ${g.leader}`; });
+  SHOPS.forEach((sh, i) => { const k = take(() => true); SHOP_STONE[i] = k; STONE_SRC[k] = `sold at a shop in ${ZONES[zoneIdx(sh.x, sh.y)].n}`; });
+  HIDDEN.filter(h => h.item[0] === 'mega').forEach(h => {
+    const k = take(() => true); h.item = ['stone', k];
+    STONE_SRC[k] = 'hidden in ' + (h.layer === 'over' ? ZONES[zoneIdx(h.x, h.y)].n : {cave: 'the Underground Caves', island: 'Lava Island', mountain: 'Frostspire Mountain'}[h.layer]);
+  });
+  free.forEach(k => { CRYSTAL_STONES.push(k); STONE_SRC[k] = 'rare from crystals'; });
+})();
+const stoneCount = () => Object.values(S.stones || {}).reduce((a, b) => a + b, 0);
+const hasStone = k => ((S.stones || {})[k] || 0) > 0;
+function giveStone(k, n = 1) { if (!k) return; S.stones = S.stones || {}; S.stones[k] = (S.stones[k] || 0) + n; }
 const DEX_BASE = ['cindrel','cindrake','puddlefin','tidalfin','sproutle','bramblett','snoozel','slumbuck','zaplet','voltcoil','wisplume','puffwisp','mossnub','cappuff','thornback','driplet','shellbok','emberwick','magmole','pebbloon','clodhorn','glimmite','burrowl','glowpip','fluffin','fluffaroo','grizzum','petalbud','blossara','leafbug','vinetail','buzzbit','voltwasp','ampurr','jellune','jellaroon','starflop','sharkle','megafin','blazepup','infernox','charbeak','kilnshell','rockhog','bouldertusk','gemshell','breezlet','galeon','frostling','glaciorn','chillpup','shiverwing','tundrox','gloomlet','phantomire','nightmask','duskbat','umbrawing','shadecap','solarion','abyssalor','verdantus','thundrake','frostmaw','nocturnix'];
 const DEX = (() => {
   const evoTargets = new Set(Object.values(SP).filter(v => v.evo).map(v => v.evo[0])), out = [];
@@ -1032,7 +1076,7 @@ const nm = m => SP[m.sp].n;
 let S = null;      // persistent game state
 let B = null;      // battle state
 const KEY = 'wildgrove-save-v1';
-function fresh() { return {mode:'start', mapVer:MAP_VER, px:START[0], py:START[1], dir:'down', party:[], box:[], broken:[], keys:0, bossWon:false, opened:[], islandFrom:null, orbs:5, berries:3, great:0, superb:0, mega:0, found:[], revive:0, coins:150, beaten:[], seen:[], caught:[], badges:[], layer:'over'}; }
+function fresh() { return {mode:'start', mapVer:MAP_VER, px:START[0], py:START[1], dir:'down', party:[], box:[], broken:[], keys:0, bossWon:false, opened:[], islandFrom:null, orbs:5, berries:3, great:0, superb:0, mega:0, stones:{}, found:[], revive:0, coins:150, beaten:[], seen:[], caught:[], badges:[], layer:'over'}; }
 let staleTab = false;   // another tab saved newer progress; this tab must not overwrite it
 function save() { if (staleTab) return; try { localStorage.setItem(KEY, JSON.stringify(serial())); } catch(e) {} }
 window.addEventListener('storage', e => {
@@ -1051,7 +1095,12 @@ function load(data) {
   S = d && d.party && d.party.length ? Object.assign(fresh(), d) : fresh();
   if (S.mode === 'battle') S.mode = 'map';
   { const fix = k => SP[k] ? k : migrateKey(k);
-    [...S.party, ...S.box].forEach(m => { const nk = fix(m.sp); if (nk !== m.sp || !(m.moves || []).every(x => MOVES[x])) { m.sp = nk; m.moves = movesFor(nk, m.lv); } });
+    S.stones = S.stones || {};
+    [...S.party, ...S.box].forEach(m => { const nk = fix(m.sp);
+      if (m.sp.startsWith('mega_') && !SP[nk].megaOf) giveStone(MEGA_LIST.find(k => SP[k].t === SP[nk].t) || MEGA_LIST[0]);   // a Mega that no longer exists gives back a stone
+      if (nk !== m.sp || !(m.moves || []).every(x => MOVES[x])) { m.sp = nk; m.moves = movesFor(nk, m.lv); } });
+    if (S.mega > 0) { const own = [...S.party, ...S.box].map(m => m.sp).filter(k => MEGA_SET.has(k));   // old all-purpose stones become stones for your own creatures
+      for (let i = 0; i < S.mega; i++) giveStone(own[i] || MEGA_LIST[i]); S.mega = 0; }
     S.seen = [...new Set(S.seen.map(fix))].filter(k => SP[k] && !SP[k].megaOf); S.caught = [...new Set(S.caught.map(fix))].filter(k => SP[k] && !SP[k].megaOf); }
   if (!['cave', 'island', 'mountain'].includes(S.layer)) S.layer = 'over';
   if (S.mapVer !== MAP_VER) { S.broken = []; S.beaten = []; }
@@ -1946,14 +1995,15 @@ function renderStatus() {
   $('#berryCount').textContent = 'Berries ' + (S.berries + S.superb);
   $('#badgeCount').textContent = 'Badges ' + S.badges.length + '/' + GYMS.length;
   $('#keyCount').hidden = !S.bossWon; $('#keyCount').textContent = 'Keys ' + S.keys;
-  $('#megaCount').hidden = !S.mega; $('#megaCount').textContent = 'Mega Stones ' + (S.mega || 0);
+  $('#megaCount').hidden = !stoneCount(); $('#megaCount').textContent = 'Mega Stones ' + stoneCount();
   $('#dexCount').textContent = 'Grove Log ' + S.caught.length + '/' + TOTAL_SPECIES;
   if (!$('#dex').hidden) renderDex();
   $('#team').innerHTML = S.party.map(m => { const st = stats(m); const f = Math.max(0, m.hp/st.hp);
     return `<div class="mini"><b>${nm(m)}</b><span class="lv">Lv${m.lv} · ${m.hp}/${st.hp}</span><div class="bar"><i style="width:${f*100}%;background:${f>.5?'var(--hp)':f>.2?'var(--warn)':'var(--crit)'}"></i></div></div>`; }).join('');
   if (S.box.length) $('#team').insertAdjacentHTML('beforeend', `<div class="mini"><span class="lv">${S.box.length} more resting in the Grove Box · tap Team &amp; Box to swap</span></div>`);
 }
-function whereFound(k) {
+function whereFound(k) { const w = whereFound0(k); return MEGA_SET.has(k) ? `${w} · Mega Stone: ${stoneName(k)} (${STONE_SRC[k]})` : w; }
+function whereFound0(k) {
   if (SP[k].fam) { const st = SP[k].stage + 1, n = Object.keys(SP).filter(b => SP[b].famId === SP[k].famId && SP[b].fam).length, first = Object.keys(SP).find(b => SP[b].famId === SP[k].famId && SP[b].fam && SP[b].stage === 0);
     const fz = [...ZONES, CAVE_ZONE, LAVA_ZONE, MAGMA_ZONE, ...MT_ZONES].filter(z => z.list.includes(k) || z.rare.includes(k)).map(z => z.n);
     return `Stage ${st} of ${n} in the ${SP[first].n} family` + (fz.length ? ` · found in ${fz.slice(0, 2).join(', ')}` : ''); }
@@ -2037,7 +2087,8 @@ function openTele() {
   add('Underground Caves', 'Lockers and cave creatures · Lv 10–15', () => { let sp = [24, 18]; CAVE.forEach((row, y) => { const x = row.indexOf('S'); if (x >= 0) sp = [x, y]; }); land('cave', sp[0], sp[1] + 1, 'Zap! You teleported to the Underground Caves. Climb any ladder to get back up.'); });
   add('Stay here', '', () => { setMode('map'); }, 'back');
 }
-function openShop() { setMode('shop'); $('#shopMsg').textContent = 'Welcome to the Grove Shop! What would you like?'; renderShop(); }
+let curShop = -1;
+function openShop(i = -1) { curShop = i; setMode('shop'); $('#shopMsg').textContent = 'Welcome to the Grove Shop! What would you like?'; renderShop(); }
 function renderShop() {
   $('#shopCoins').textContent = S.coins + ' coins';
   const list = $('#shopList'); list.innerHTML = '';
@@ -2052,6 +2103,14 @@ function renderShop() {
     });
     row.appendChild(b); list.appendChild(row);
   });
+  const sk = SHOP_STONE[curShop];
+  if (sk) {
+    const price = 2500, row = document.createElement('div'); row.className = 'shoprow';
+    row.innerHTML = `<div><b>${stoneName(sk)}</b><small>Lets ${SP[sk].n} Mega Evolve</small></div><span class="have">Have ${(S.stones || {})[sk] || 0}</span>`;
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = `Buy · ${price}`; b.disabled = S.coins < price;
+    b.addEventListener('click', () => { if (S.coins < price) return; S.coins -= price; giveStone(sk); save(); $('#shopMsg').textContent = `You bought a ${stoneName(sk)}. Thank you!`; renderShop(); renderStatus(); });
+    row.appendChild(b); list.appendChild(row);
+  }
 }
 $('#shopLeave').addEventListener('click', () => { setMode('map'); $('#hint').textContent = 'Come back soon! Beat trainers to earn more coins.'; save(); });
 let boxPick = null;
@@ -2060,7 +2119,7 @@ function boxRow(m, i, inTeam) {
   row.className = 'boxrow' + (!inTeam && boxPick === i ? ' pick' : '');
   const c = document.createElement('canvas'); c.width = 104; c.height = 104; row.appendChild(c);
   const info = document.createElement('div');
-  info.innerHTML = `<b>${nm(m)}</b> <span class="chip" style="background:${ty.c}">${ty.n}</span><small>Lv${m.lv} · ${m.hp}/${st.hp} HP${inTeam && i === 0 ? ' · goes first' : ''}</small>`;
+  info.innerHTML = `<b>${nm(m)}</b> <span class="chip" style="background:${ty.c}">${ty.n}</span><small>Lv${m.lv} · ${m.hp}/${st.hp} HP${inTeam && i === 0 ? ' · goes first' : ''}</small>${SP[m.sp].mega ? `<small>Mega Stone: ${stoneName(m.sp)} (${hasStone(m.sp) ? 'you have it!' : 'not found yet'})</small>` : ''}`;
   row.appendChild(info);
   const btns = document.createElement('div'); btns.className = 'boxbtns';
   const add = (label, fn, go) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = label; if (go) b.className = 'go'; b.addEventListener('click', fn); btns.appendChild(b); };
@@ -2078,28 +2137,93 @@ function boxRow(m, i, inTeam) {
     else if (boxPick === i) add('Cancel', () => { boxPick = null; boxMsg('Your team has 6 creatures. Pick a box creature to swap in.'); renderBox(); });
     else add('Swap in', () => { boxPick = i; boxMsg(`Now pick who ${nm(m)} should replace on your team.`); renderBox(); });
   }
-  if (SP[m.sp].mega && S.mega > 0) add('Mega Evolve', () => megaEvolve(m), true);
+  if (SP[m.sp].mega && hasStone(m.sp)) add('Mega Evolve', () => megaEvolve(m), true);
   row.appendChild(btns);
   drawMon(c.getContext('2d'), m.sp, 54, 60, (SP[m.sp].big ? 26 : 30) / (SP[m.sp].sz || 1) * (SP[m.sp].sz ? 0.92 : 1), -1, 1000);
   return row;
 }
 function megaApply(m) {
-  const before = stats(m).hp; S.mega--; m.sp = SP[m.sp].mega; m.hp = Math.max(1, m.hp + stats(m).hp - before); m.moves = movesFor(m.sp, m.lv);
+  const before = stats(m).hp; S.stones[m.sp]--; m.sp = SP[m.sp].mega; m.hp = Math.max(1, m.hp + stats(m).hp - before); m.moves = movesFor(m.sp, m.lv);
 }
 function megaEvolve(m) { const old = nm(m); megaApply(m); boxMsg(`${old} Mega Evolved into ${nm(m)}!`); boxChanged(); }
 async function megaInBattle() {
-  const me = S.party[B.act]; if (!SP[me.sp].mega || S.mega <= 0) return;
+  const me = S.party[B.act]; if (!SP[me.sp].mega || !hasStone(me.sp)) return; const stone = stoneName(me.sp);
   B.busy = true; B.menu = 'main'; renderActions();
-  const old = nm(me); await say(`${old} is reacting to the Mega Stone!`, 1200);
+  const old = nm(me); await say(`${old} is reacting to the ${stone}!`, 1200);
   B.evoFlash = true; await sleep(1500); megaApply(me); B.evoFlash = false; renderStatus();
   await say(`${old} Mega Evolved into ${nm(me)}!`, 1400);
   B.busy = false; renderActions(); save();
 }
+
+/* Friends: every trainer has a 4-digit code. After beating Boss Rowan you can share a creature as a Locker Challenge
+   (a code like 2222-MOLTAARA-1000, or a QR code that opens the game). A friend who has also beaten the Boss puts it in,
+   and your creature waits in their empty lockers in the Underground Caves to battle. They can catch a copy; you keep yours. */
+const SHARE_URL = 'https://garchomp67.github.io/claude-games/wildgrove-tamers/';
+function myCode() { if (!S.code) { S.code = String(1000 + Math.floor(Math.random()*9000)); save(); } return S.code; }
+const shareName = k => SP[k].n.toUpperCase().replace(/ /g, '_');
+function challengeCode(m) { return `${myCode()}-${shareName(m.sp)}-${m.lv}`; }
+function parseChallenge(c) {
+  const m = String(c).trim().toUpperCase().match(/^(\d{4})-([A-Z_]+)-(\d{1,4})$/); if (!m) return null;
+  const k = Object.keys(SP).find(k => !SP[k].legend && shareName(k) === m[2]); if (!k) return null;
+  return {from: m[1], sp: k, lv: Math.min(9999, Math.max(1, +m[3]))};
+}
+function addFriendCode(v) {
+  v = String(v || '').trim().toUpperCase();
+  if (/^\d{4}$/.test(v)) {
+    if (v === myCode()) return "That's your own code!";
+    S.friends = [...new Set([...(S.friends || []), v])]; save();
+    return `Trainer ${v} is now your friend! Ask them for their Locker Challenge code or QR code to battle their creature.`;
+  }
+  const ch = parseChallenge(v); if (!ch) return "Hmm, that code doesn't work. Check it and try again.";
+  if (ch.from === myCode()) return "That's your own creature!";
+  if (!S.bossWon) return 'Beat Boss Rowan first, then you can add Locker Challenges!';
+  S.friends = [...new Set([...(S.friends || []), ch.from])];
+  S.challenges = (S.challenges || []).filter(c => !(c.from === ch.from && c.sp === ch.sp)); S.challenges.push(ch); save();
+  return `Trainer ${ch.from}'s ${SP[ch.sp].n} (Lv${ch.lv}) is waiting in your empty lockers in the Underground Caves!`;
+}
+function renderFriends(msg) {
+  const el = $('#friendsBody'); el.innerHTML = '';
+  const add = (tag, text, cls) => { const e = document.createElement(tag); if (text != null) e.textContent = text; if (cls) e.className = cls; el.appendChild(e); return e; };
+  add('p', 'Your trainer code', 'hint'); add('div', myCode(), 'fcode');
+  add('h3', 'Add a friend', 'boxh');
+  add('p', "Type a friend's 4-digit trainer code, or their Locker Challenge code.", 'hint');
+  const row = add('div', null, 'frow'), inp = document.createElement('input'); inp.id = 'friendInput'; inp.placeholder = '2222-MOLTAARA-1000'; inp.autocomplete = 'off'; inp.setAttribute('aria-label', 'Friend code'); row.appendChild(inp);
+  const go = document.createElement('button'); go.type = 'button'; go.className = 'logbtn'; go.textContent = 'Add'; row.appendChild(go);
+  go.addEventListener('click', () => { const r = addFriendCode(inp.value); renderFriends(r); renderStatus(); });
+  inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') go.click(); });
+  if (msg) add('p', msg, 'hint').style.fontWeight = '700';
+  if ((S.friends || []).length) add('p', 'Your friends: ' + S.friends.join(', '), 'hint');
+  add('h3', 'Locker Challenge', 'boxh');
+  if (!S.bossWon) { add('p', 'Beat Boss Rowan in Sunny Meadow to unlock Locker Challenges with friends!', 'hint'); return; }
+  add('p', 'Pick a creature to share. Your friend scans the QR code with their phone camera, or types the code. It waits in their empty lockers to battle, and they can catch a copy. You keep yours!', 'hint');
+  const all = [...S.party, ...S.box].filter(m => !SP[m.sp].legend);
+  const sel = document.createElement('select'); sel.id = 'shareSel'; sel.setAttribute('aria-label', 'Creature to share');
+  all.forEach((m, i) => { const o = document.createElement('option'); o.value = i; o.textContent = `${nm(m)} Lv${m.lv}`; sel.appendChild(o); });
+  el.appendChild(sel);
+  const out = add('div', null, 'shareout');
+  const show = () => {
+    const m = all[+sel.value]; out.innerHTML = ''; if (!m) return;
+    const code = challengeCode(m), c = document.createElement('div'); c.className = 'fcode'; c.textContent = code; out.appendChild(c);
+    if (window.qrcode) { const q = qrcode(0, 'M'); q.addData(SHARE_URL + '#challenge=' + code); q.make(); const box = document.createElement('div'); box.className = 'qrbox'; box.innerHTML = q.createSvgTag({cellSize: 5, margin: 3}); out.appendChild(box); }
+  };
+  sel.addEventListener('change', show); show();
+  add('h3', 'Waiting in your lockers', 'boxh');
+  const w = (S.challenges || []).filter(c => SP[c.sp]);
+  add('p', w.length ? w.map(c => `Trainer ${c.from}'s ${SP[c.sp].n} Lv${c.lv}`).join(', ') : 'No friend creatures yet.', 'hint');
+}
+$('#friendsBtn').addEventListener('click', () => {
+  const d = $('#friendsDeck'); d.hidden = !d.hidden; $('#friendsBtn').setAttribute('aria-expanded', String(!d.hidden));
+  if (!d.hidden) { renderFriends(); d.scrollIntoView({block: 'nearest'}); }
+});
 function boxMsg(t) { $('#boxMsg').textContent = t; }
 function boxChanged() { save(); renderStatus(); renderBox(); }
 function renderBox() {
   if (boxPick !== null && !S.box[boxPick]) boxPick = null;
   $('#boxSummary').textContent = `Team ${S.party.length}/6 · Box ${S.box.length}`;
+  let sl = $('#stoneList'); if (!sl) { sl = document.createElement('p'); sl.id = 'stoneList'; sl.className = 'hint'; $('#boxSummary').parentElement.insertAdjacentElement('afterend', sl); }
+  const haveSt = Object.entries(S.stones || {}).filter(([k, n]) => n > 0 && SP[k]);
+  sl.textContent = haveSt.length ? 'Your Mega Stones: ' + haveSt.map(([k, n]) => stoneName(k) + (n > 1 ? ` (${n})` : '')).join(', ')
+                                 : 'No Mega Stones yet. Find them hidden in the world, win them from gyms, buy them in shops, or get lucky smashing crystals!';
   const tl = $('#teamList'), bl = $('#boxList'); tl.innerHTML = ''; bl.innerHTML = '';
   S.party.forEach((m, i) => tl.appendChild(boxRow(m, i, true)));
   if (!S.box.length) bl.innerHTML = '<p class="boxempty">Creatures you catch when your team is full go here.</p>';
@@ -2111,7 +2235,7 @@ $('#boxBtn').addEventListener('click', () => {
 });
 function setMode(mode) {
   if (mode !== 'map' && typeof bigMap !== 'undefined') bigMap = false;
-  if (mode !== 'map') { $('#dex').hidden = true; $('#dexCount').setAttribute('aria-expanded', 'false'); $('#boxDeck').hidden = true; $('#boxBtn').setAttribute('aria-expanded', 'false'); }
+  if (mode !== 'map') { $('#friendsDeck').hidden = true; $('#friendsBtn').setAttribute('aria-expanded', 'false'); $('#dex').hidden = true; $('#dexCount').setAttribute('aria-expanded', 'false'); $('#boxDeck').hidden = true; $('#boxBtn').setAttribute('aria-expanded', 'false'); }
   if (mode === 'start' || mode === 'shop') { $('#typeChart').hidden = true; ['#typeBtn', '#typeBtnBattle'].forEach(id => $(id).setAttribute('aria-expanded', 'false')); }
   S.mode = mode;
   $('#mapDeck').hidden = mode !== 'map';
@@ -2174,7 +2298,7 @@ function tryMove(d) {
     $('#hint').textContent = 'The portal swirled you back home, safe and sound.'; save(); return;
   }
   if (ch === 'P') { save(); openTele(); return; }
-  if (ch === 'M') { save(); openShop(); return; }
+  if (ch === 'M') { save(); openShop(SHOPS.findIndex(sh => sh.door[0] === nx && sh.door[1] === ny)); return; }
   if (ch === 'Q') {
     if (S.badges.length < GYMS.length) { S.px -= dx; S.py -= dy; $('#hint').textContent = `The Boss's door is locked tight. Come back with all ${GYMS.length} badges (you have ${S.badges.length}).`; save(); return; }
     save(); startGymBattle(BOSS); return;
@@ -2203,7 +2327,10 @@ function teleAfterLegend() {
 async function useLocker(lk) {
   if (!lk) return;
   const sp = SP[lk.sp];
-  if (S.caught.includes(lk.sp) && S.opened.includes(lk.id)) { $('#hint').textContent = `This locker is empty. ${sp.n} is part of your collection now.`; return; }
+  if (S.caught.includes(lk.sp) && S.opened.includes(lk.id)) {
+    const ch = (S.challenges || []).find(c => SP[c.sp]);
+    if (ch) { startBattle(makeMon(ch.sp, ch.lv), `Trainer ${ch.from}'s ${SP[ch.sp].n} jumped out of the locker!`); if (B) B.challenge = ch; return; }
+    $('#hint').textContent = `This locker is empty. ${sp.n} is part of your collection now.`; return; }
   if (!S.opened.includes(lk.id)) {
     if (S.keys <= 0) { $('#hint').textContent = S.bossWon ? 'You are out of keys.' : 'A heavy locker with a gold padlock. Something powerful is moving inside... The Boss of Sunny Meadow holds the keys.'; return; }
     S.keys--; S.opened.push(lk.id); save(); renderStatus();
@@ -2217,11 +2344,11 @@ function smashCrystal(x, y) {
   const rich = inCave() || zoneAt(x, y).biome === 'crystal';
   const big = isGold(x, y), coins = (rich ? 15 : 8) + Math.floor(Math.random()*(rich ? 26 : 16)) + (big ? 90 : 0);
   S.coins += coins;
-  const mega = Math.random() < 1/1000000;   // super rare: about 1 crystal in a million
-  if (mega) S.mega = (S.mega || 0) + 1;
+  const mega = Math.random() < 1/1000 ? CRYSTAL_STONES[Math.floor(Math.random()*CRYSTAL_STONES.length)] : null;   // rare: about 1 crystal in 1,000
+  if (mega) giveStone(mega);
   for (let i = 0; i < 18; i++) { const a = Math.random()*Math.PI*2, v = 1.5 + Math.random()*3; sparks.push({x: x*TS + 16, y: y*TS + 16, vx: Math.cos(a)*v, vy: Math.sin(a)*v - 2, life: 1, col: ['#c9e0ff','#9cc4f5','#ffffff','#f2a541'][i % 4]}); }
   sparks.push({x: x*TS + 16, y: y*TS + 4, vx: 0, vy: -0.6, life: 1.6, text: '+' + coins});
-  $('#hint').textContent = mega ? 'WOW!!! A MEGA STONE was hidden inside the crystal! Open Team & Box to Mega Evolve a fully evolved creature.' : big ? `Wow, a gold gem! You found ${coins} coins inside.` : `You smashed the crystal and found ${coins} coins. Crystals grow back when you rest at a spring.`;
+  $('#hint').textContent = mega ? `WOW!!! A ${stoneName(mega)} was hidden inside the crystal! It lets ${SP[mega].n} Mega Evolve.` : big ? `Wow, a gold gem! You found ${coins} coins inside.` : `You smashed the crystal and found ${coins} coins. Crystals grow back when you rest at a spring.`;
   renderStatus(); save();
 }
 function drawSparks() {
@@ -2372,6 +2499,7 @@ async function checkFaints() {
     if (tr && tr.gym && tr.gym.boss) await winBoss();
     else if (tr && tr.gym) await winGym(tr.gym);
     else if (tr) await winTrainer(tr);
+    else if (B.challenge) await say(`${nm(B.foe)} ran back into the locker! Next time, weaken it and throw an orb to catch it.`, 1800);
     else { const c = 4 + Math.floor(B.foe.lv*1.5); S.coins += c; await say(`You picked up ${c} coins.`, 800); }
     await endBattle();
     return true;
@@ -2411,6 +2539,7 @@ async function winBoss() {
     S.bossWon = true; S.keys += LOCKERS.length;
     await say(`You received ${LOCKERS.length} gold locker keys!`, 1600);
     await say('Boss Rowan: "Six lockers lie deep in the Underground Caves. A legendary creature sleeps in each one."', 2600);
+    const sk = GYM_STONE.boss; if (sk) { giveStone(sk); await say(`You got the ${stoneName(sk)}! It lets ${SP[sk].n} Mega Evolve.`, 1800); }
   }
   S.coins += 2000; await say('You got 2000 coins!', 1300);
 }
@@ -2418,7 +2547,8 @@ async function winGym(gym) {
   const first = !S.badges.includes(gym.id);
   await say(`You beat ${gym.leader}!`, 1200);
   await say(`${gym.leader}: "${gym.champion ? 'Incredible. You are the new Champion of Wildgrove!' : 'Your team is the real deal. Take this!'}"`, 2000);
-  if (first) { S.badges.push(gym.id); await say(`You earned the ${gym.badge}!`, 1400); }
+  if (first) { S.badges.push(gym.id); await say(`You earned the ${gym.badge}!`, 1400);
+    const sk = GYM_STONE[gym.id]; if (sk) { giveStone(sk); await say(`You got the ${stoneName(sk)}! It lets ${SP[sk].n} Mega Evolve.`, 1800); } }
   const coins = (gym.champion ? 1500 : 150 + GYMS.indexOf(gym)*100) * (first ? 1 : 0.5);
   S.orbs += gym.reward[0]; S.berries += gym.reward[1]; S.coins += coins;
   await say(`You got ${coins} coins, ${gym.reward[0]} orbs and ${gym.reward[1]} berries.`, 1400);
@@ -2469,6 +2599,7 @@ async function throwOrb(kind = 'orbs') {
   if (caught) {
     await say(`Gotcha! ${nm(B.foe)} was caught!`, 1200);
     const m = B.foe; m.xp = 0; markCaught(m.sp);
+    if (B.challenge) { S.challenges = (S.challenges || []).filter(c => c !== B.challenge); await say(`You caught Trainer ${B.challenge.from}'s ${nm(m)}! They still keep theirs.`, 1800); }
     if (S.party.length < 6) { S.party.push(m); await say(`${nm(m)} joined your team.`, 900); }
     else { S.box.push(m); await say(`Your team is full, so ${nm(m)} went to the Grove Box.`, 1200); }
     B.orb = null; await endBattle();
@@ -2531,7 +2662,7 @@ function renderActions() {
     btn('Berry', `${S.berries} left · heals 20 HP`, () => useBerry('berries'), S.berries <= 0 || full);
     btn('Super Berry', `${S.superb} left · heals 60 HP`, () => useBerry('superb'), S.superb <= 0 || full);
     btn('Revive Seed', `${S.revive} left · wake a fainted creature`, () => { B.menu = 'revive'; renderActions(); }, S.revive <= 0 || !S.party.some(m => m.hp <= 0));
-    if (S.mega > 0) btn('Mega Stone', SP[me.sp].mega ? `${S.mega} left · Mega Evolve` : 'Only fully evolved creatures can Mega Evolve', megaInBattle, !SP[me.sp].mega);
+    if (stoneCount() > 0) btn('Mega Stone', SP[me.sp].mega ? (hasStone(me.sp) ? `${stoneName(me.sp)} · Mega Evolve` : `Needs ${stoneName(me.sp)}`) : "This creature can't Mega Evolve", megaInBattle, !(SP[me.sp].mega && hasStone(me.sp)));
     btn('Back', '', () => { B.menu = 'main'; renderActions(); }, false, 'back');
   } else if (B.menu === 'revive') {
     S.party.forEach((m, i) => { if (m.hp <= 0) btn(`${nm(m)} Lv${m.lv}`, 'Fainted · revive to half HP', () => useRevive(i)); });
@@ -2552,7 +2683,7 @@ function buildStarters() {
     b.appendChild(c);
     b.insertAdjacentHTML('beforeend', `<span>${SP[k].n}</span><small>${TYPES[SP[k].t].n} type</small>`);
     b.addEventListener('click', () => {
-      S.party = [makeMon(k, 5)]; markCaught(k); S.tripCrystal = true; S.tripBoss = true; S.keysBack = true; S.lv100 = true; S.giftMega = true; S.giftTypeTeam = true; S.blizzBack = true; S.layer = 'over'; S.px = START[0]; S.py = START[1]; S.mapVer = MAP_VER; S.dir = 'down'; snapCam();
+      S.party = [makeMon(k, 5)]; markCaught(k); S.tripCrystal = true; S.tripBoss = true; S.keysBack = true; S.lv100 = true; S.giftMega = true; S.giftTypeTeam = true; S.giftGymStones = true; S.giftMoltaara = true; S.giftCode2222 = true; S.blizzBack = true; S.layer = 'over'; S.px = START[0]; S.py = START[1]; S.mapVer = MAP_VER; S.dir = 'down'; snapCam();
       setMode('map'); $('#hint').textContent = `${SP[k].n} is ready! Walk into the dark tall grass to find wild creatures.`; save();
     });
     wrap.appendChild(b); cards.push([c, k]);
@@ -2614,6 +2745,47 @@ TPL_SRC.push("^(\\d+) Revive Seeds$"); I18N.hant.tpl.push("$1 個復活種子");
 TPL_SRC.push("^(\\d+) Capture Orbs$"); I18N.hant.tpl.push("$1 個捕獸球"); I18N.hans.tpl.push("$1 个捕兽球");
 TPL_SRC.push("^(\\d+) coins$"); I18N.hant.tpl.push("$1 枚金幣"); I18N.hans.tpl.push("$1 枚金币");
 I18N.hant.exact["Videos"] = "影片"; I18N.hans.exact["Videos"] = "视频"; I18N.hant.exact["▶ Videos"] = "▶ 影片"; I18N.hans.exact["▶ Videos"] = "▶ 视频";
+I18N.hant.exact["This creature can't Mega Evolve"] = "這隻怪獸不能超級進化"; I18N.hans.exact["This creature can't Mega Evolve"] = "这只怪兽不能超级进化";
+I18N.hant.exact["No Mega Stones yet. Find them hidden in the world, win them from gyms, buy them in shops, or get lucky smashing crystals!"] = "還沒有超級石。可以在世界各地找到隱藏的超級石、打贏道館得到、在商店買，或是敲水晶碰運氣！"; I18N.hans.exact["No Mega Stones yet. Find them hidden in the world, win them from gyms, buy them in shops, or get lucky smashing crystals!"] = "还没有超级石。可以在世界各地找到隐藏的超级石、打赢道馆得到、在商店买，或是敲水晶碰运气！";
+I18N.hant.exact["you have it!"] = "你已經有了！"; I18N.hans.exact["you have it!"] = "你已经有了！";
+I18N.hant.exact["not found yet"] = "還沒找到"; I18N.hans.exact["not found yet"] = "还没找到";
+I18N.hant.exact["rare from crystals"] = "敲水晶偶爾會出現"; I18N.hans.exact["rare from crystals"] = "敲水晶偶尔会出现";
+TPL_SRC.push("^(.+) is reacting to the (.+)!$"); I18N.hant.tpl.push("$1 對 $2 產生了反應！"); I18N.hans.tpl.push("$1 对 $2 产生了反应！");
+TPL_SRC.push("^WOW!!! You found a hidden (.+)! It lets (.+) Mega Evolve\\. \\((\\d+) of (\\d+) hidden items found\\)$"); I18N.hant.tpl.push("哇！！！你找到了隱藏的$1！它能讓$2超級進化。（已找到 $3/$4 個隱藏道具）"); I18N.hans.tpl.push("哇！！！你找到了隐藏的$1！它能让$2超级进化。（已找到 $3/$4 个隐藏道具）");
+TPL_SRC.push("^WOW!!! A (.+) was hidden inside the crystal! It lets (.+) Mega Evolve\\.$"); I18N.hant.tpl.push("哇！！！水晶裡藏著$1！它能讓$2超級進化。"); I18N.hans.tpl.push("哇！！！水晶里藏著$1！它能让$2超级进化。");
+TPL_SRC.push("^You got the (.+)! It lets (.+) Mega Evolve\\.$"); I18N.hant.tpl.push("你得到了$1！它能讓$2超級進化。"); I18N.hans.tpl.push("你得到了$1！它能让$2超级进化。");
+TPL_SRC.push("^Lets (.+) Mega Evolve$"); I18N.hant.tpl.push("能讓$1超級進化"); I18N.hans.tpl.push("能让$1超级进化");
+TPL_SRC.push("^Needs (.+)$"); I18N.hant.tpl.push("需要$1"); I18N.hans.tpl.push("需要$1");
+TPL_SRC.push("^Your Mega Stones: (.+)$"); I18N.hant.tpl.push("你的超級石：$1"); I18N.hans.tpl.push("你的超级石：$1");
+TPL_SRC.push("^(.+) \\((\\d+)\\)$"); I18N.hant.tpl.push("$1（$2）"); I18N.hans.tpl.push("$1（$2）");
+TPL_SRC.push("^Mega Stone: (.+) \\((.+)\\)$"); I18N.hant.tpl.push("超級石：$1（$2）"); I18N.hans.tpl.push("超级石：$1（$2）");
+TPL_SRC.push("^hidden in (.+)$"); I18N.hant.tpl.push("藏在$1"); I18N.hans.tpl.push("藏在$1");
+TPL_SRC.push("^prize from (.+)$"); I18N.hant.tpl.push("$1的獎品"); I18N.hans.tpl.push("$1的奖品");
+TPL_SRC.push("^sold at a shop in (.+)$"); I18N.hant.tpl.push("$1的商店有賣"); I18N.hans.tpl.push("$1的商店有卖");
+TPL_SRC.push("^the Underground Caves$"); I18N.hant.tpl.push("地下洞窟"); I18N.hans.tpl.push("地下洞窟");
+TPL_SRC.push("^You got the (\\d+) Mega Stones from the gyms and the Boss you already beat, and your team is now level 1000! Open Team & Box to see your stones\\.$"); I18N.hant.tpl.push("你得到了已經打敗的道館和首領的 $1 顆超級石，而且你的隊伍現在是 1000 級了！打開「隊伍與寶盒」看看你的超級石。"); I18N.hans.tpl.push("你得到了已经打败的道馆和首领的 $1 颗超级石，而且你的队伍现在是 1000 级了！打开「队伍与宝盒」看看你的超级石。");
+I18N.hant.exact["You got a Moltaarite! Now your Moltaara can Mega Evolve. Open Team & Box and tap Mega Evolve."] = "你得到了熔融姬超級石！現在你的熔融姬可以超級進化了。打開「隊伍與寶盒」點「超級進化」。"; I18N.hans.exact["You got a Moltaarite! Now your Moltaara can Mega Evolve. Open Team & Box and tap Mega Evolve."] = "你得到了熔融姬超级石！现在你的熔融姬可以超级进化了。打开「队伍与宝盒」点「超级进化」。";
+I18N.hant.exact["Friends"] = "朋友"; I18N.hans.exact["Friends"] = "朋友";
+I18N.hant.exact["Your trainer code"] = "你的訓練家代碼"; I18N.hans.exact["Your trainer code"] = "你的训练家代码";
+I18N.hant.exact["Add a friend"] = "加朋友"; I18N.hans.exact["Add a friend"] = "加朋友";
+I18N.hant.exact["Type a friend's 4-digit trainer code, or their Locker Challenge code."] = "輸入朋友的 4 位數訓練家代碼，或是他們的置物櫃挑戰代碼。"; I18N.hans.exact["Type a friend's 4-digit trainer code, or their Locker Challenge code."] = "输入朋友的 4 位数训练家代码，或是他们的置物柜挑战代码。";
+I18N.hant.exact["Add"] = "加入"; I18N.hans.exact["Add"] = "加入";
+I18N.hant.exact["Locker Challenge"] = "置物櫃挑戰"; I18N.hans.exact["Locker Challenge"] = "置物柜挑战";
+I18N.hant.exact["Beat Boss Rowan in Sunny Meadow to unlock Locker Challenges with friends!"] = "打敗陽光草原的首領羅文，就能和朋友玩置物櫃挑戰！"; I18N.hans.exact["Beat Boss Rowan in Sunny Meadow to unlock Locker Challenges with friends!"] = "打败阳光草原的首领罗文，就能和朋友玩置物柜挑战！";
+I18N.hant.exact["Pick a creature to share. Your friend scans the QR code with their phone camera, or types the code. It waits in their empty lockers to battle, and they can catch a copy. You keep yours!"] = "選一隻怪獸分享。朋友用手機相機掃描 QR 碼，或輸入代碼。牠會在朋友的空置物櫃裡等著對戰，朋友可以抓到一隻複製品。你的還是你的！"; I18N.hans.exact["Pick a creature to share. Your friend scans the QR code with their phone camera, or types the code. It waits in their empty lockers to battle, and they can catch a copy. You keep yours!"] = "选一只怪兽分享。朋友用手机相机扫描 QR 码，或输入代码。牠会在朋友的空置物柜里等著对战，朋友可以抓到一只复制品。你的还是你的！";
+I18N.hant.exact["Waiting in your lockers"] = "在你的置物櫃裡等著"; I18N.hans.exact["Waiting in your lockers"] = "在你的置物柜里等著";
+I18N.hant.exact["No friend creatures yet."] = "還沒有朋友的怪獸。"; I18N.hans.exact["No friend creatures yet."] = "还没有朋友的怪兽。";
+I18N.hant.exact["That's your own code!"] = "這是你自己的代碼！"; I18N.hans.exact["That's your own code!"] = "这是你自己的代码！";
+I18N.hant.exact["That's your own creature!"] = "這是你自己的怪獸！"; I18N.hans.exact["That's your own creature!"] = "这是你自己的怪兽！";
+I18N.hant.exact["Hmm, that code doesn't work. Check it and try again."] = "嗯，這個代碼不對。檢查一下再試一次。"; I18N.hans.exact["Hmm, that code doesn't work. Check it and try again."] = "嗯，这个代码不对。检查一下再试一次。";
+I18N.hant.exact["Beat Boss Rowan first, then you can add Locker Challenges!"] = "先打敗首領羅文，才能加入置物櫃挑戰！"; I18N.hans.exact["Beat Boss Rowan first, then you can add Locker Challenges!"] = "先打败首领罗文，才能加入置物柜挑战！";
+TPL_SRC.unshift("^Trainer (\\d{4}) is now your friend! Ask them for their Locker Challenge code or QR code to battle their creature\\.$"); I18N.hant.tpl.unshift("訓練家 $1 現在是你的朋友了！跟他們要置物櫃挑戰代碼或 QR 碼，就能和他們的怪獸對戰。"); I18N.hans.tpl.unshift("训练家 $1 现在是你的朋友了！跟他们要置物柜挑战代码或 QR 码，就能和他们的怪兽对战。");
+TPL_SRC.unshift("^Trainer (\\d{4})'s (.+) \\(Lv(\\d+)\\) is waiting in your empty lockers in the Underground Caves!$"); I18N.hant.tpl.unshift("訓練家 $1 的 $2（Lv$3）正在地下洞窟的空置物櫃裡等你！"); I18N.hans.tpl.unshift("训练家 $1 的 $2（Lv$3）正在地下洞窟的空置物柜里等你！");
+TPL_SRC.unshift("^Trainer (\\d{4})'s (.+) Lv(\\d+)$"); I18N.hant.tpl.unshift("訓練家 $1 的 $2 Lv$3"); I18N.hans.tpl.unshift("训练家 $1 的 $2 Lv$3");
+TPL_SRC.unshift("^Trainer (\\d{4})'s (.+) jumped out of the locker!$"); I18N.hant.tpl.unshift("訓練家 $1 的 $2 從置物櫃跳出來了！"); I18N.hans.tpl.unshift("训练家 $1 的 $2 从置物柜跳出来了！");
+TPL_SRC.unshift("^You caught Trainer (\\d{4})'s (.+)! They still keep theirs\\.$"); I18N.hant.tpl.unshift("你抓到了訓練家 $1 的 $2！他們的還在他們那裡。"); I18N.hans.tpl.unshift("你抓到了训练家 $1 的 $2！他们的还在他们那里。");
+TPL_SRC.unshift("^(.+) ran back into the locker! Next time, weaken it and throw an orb to catch it\\.$"); I18N.hant.tpl.unshift("$1 跑回置物櫃裡了！下次先削弱牠，再丟球抓牠。"); I18N.hans.tpl.unshift("$1 跑回置物柜里了！下次先削弱牠，再丢球抓牠。");
+TPL_SRC.unshift("^Your friends: (.+)$"); I18N.hant.tpl.unshift("你的朋友：$1"); I18N.hans.tpl.unshift("你的朋友：$1");
 const TPL_RE = TPL_SRC.map(s => new RegExp(s));
 const TR_CACHE = {hant: new Map(), hans: new Map()};
 const NAME_MAP = {hant: null, hans: null};
@@ -2628,6 +2800,7 @@ function nameMap(lang) {
     if (zh) m[v.n] = zh;
   });
   Object.values(SP).forEach(v => { if (v.megaOf && m[SP[v.megaOf].n]) m[v.n] = FAM_ZH[lang].mega + m[SP[v.megaOf].n]; });
+  MEGA_LIST.forEach(k => { if (m[SP[k].n]) m[stoneName(k)] = m[SP[k].n] + (lang === 'hant' ? '超級石' : '超级石'); });
   return NAME_MAP[lang] = m;
 }
 function i18nCore(s) {
@@ -2756,7 +2929,20 @@ function start(data) {
     S.box = [...S.party, ...S.box]; S.party = team; team.forEach(m => markCaught(m.sp));
     setTimeout(() => { $('#hint').textContent = `Your perfect type team is here: ${team.map(m => nm(m)).join(', ')}! Your old team is safe in the Grove Box.`; renderStatus(); }, 1500);
   }
-  S.giftTypeTeam = true; save();
+  S.giftTypeTeam = true;
+  if (false && !S.giftGymStones && S.party.length) {
+    [...GYMS, BOSS].forEach(g => giveStone(GYM_STONE[g.id]));
+    S.party.forEach(m => { if (m.lv < 1000) { m.lv = 1000; m.xp = 0; } let e; while ((e = SP[m.sp].evo) && m.lv >= e[1]) { m.sp = e[0]; markCaught(m.sp); } m.moves = movesFor(m.sp, m.lv); m.hp = stats(m).hp; });
+    setTimeout(() => { $('#hint').textContent = `You got the ${GYMS.length + 1} Mega Stones from the gyms and the Boss you already beat, and your team is now level 1000! Open Team & Box to see your stones.`; renderStatus(); }, 2600);
+  }
+  S.giftGymStones = true;
+  if (false && !S.giftMoltaara && S.party.length) { giveStone('x_moltaara'); setTimeout(() => { $('#hint').textContent = 'You got a Moltaarite! Now your Moltaara can Mega Evolve. Open Team & Box and tap Mega Evolve.'; renderStatus(); }, 3600); }
+  S.giftMoltaara = true;
+  if (false && !S.giftCode2222 && S.party.length) S.code = '2222';
+  S.giftCode2222 = true; myCode(); save();
+  { const hm = (location.hash || '').match(/challenge=([0-9A-Za-z_\-]+)/);
+    if (hm && S.party.length) { const r = addFriendCode(decodeURIComponent(hm[1])); setTimeout(() => { $('#hint').textContent = r; }, 2000);
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} } }
   requestAnimationFrame(frame);
   grabFocus(); setTimeout(showFocus, 300);
 }
