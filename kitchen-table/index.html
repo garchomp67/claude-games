@@ -295,6 +295,7 @@ const ICON = {
   read:'<svg class="i" viewBox="0 0 24 24"><path d="M3 5c3-1 6-1 9 1 3-2 6-2 9-1v14c-3-1-6-1-9 1-3-2-6-2-9-1z"/><path d="M12 6v14"/></svg>',
   games:'<svg class="i" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
   speaker:'<svg class="i" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>',
+  music:'<svg class="i" viewBox="0 0 24 24"><path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg>',
   videos:'<svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9l5 3-5 3z"/></svg>',
   lock:'<svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
   restart:'<svg class="i" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v5h5"/></svg>'
@@ -12874,6 +12875,7 @@ function header() {
         <button data-act="mode" data-id="kids" aria-pressed="${S.mode==='kids'}">Kids</button>
         <button data-act="mode" data-id="grown" aria-pressed="${S.mode==='grown'}">${S.mode==='grown'?'':ICON.lock}Grown-ups</button>
       </div>
+      <button data-act="music" aria-pressed="${musicOn()}" title="${musicOn() ? 'Turn music off' : 'Turn music on'}">${ICON.music} ${musicOn() ? 'Music on' : 'Music off'}</button>
       <button data-act="restart">${ICON.restart} Restart</button>
     </div></header>`;
 }
@@ -12969,6 +12971,9 @@ function grownView() {
         <option value="" ${!S.gameLevel?.[k.id] ? 'selected' : ''}>Same as their grade (${gradeName(k.grade)})</option>
         ${GRADES.map(g => `<option value="${g[0]}" ${S.gameLevel?.[k.id] === g[0] ? 'selected' : ''}>${g[1]} math</option>`).join('')}</select></label>`).join('')}</div></div>
     <label class="field" style="max-width:320px">Math in games<select id="game-math">${[[0,'Off'],[20,'Start + a math break every 20 sec'],[30,'Start + a math break every 30 sec'],[45,'Start + a math break every 45 sec'],[60,'Start + a math break every 60 sec']].map(([v,l]) => `<option value="${v}" ${(S.gameMath?.every ?? 30) === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <label class="toggle"><input type="checkbox" id="music-on" ${musicOn() ? 'checked' : ''}>
+      <span><b>Music.</b> Play gentle background songs. Music goes quiet during videos and read-aloud.</span></label>
+    ${musicOn() ? `<label class="field" style="max-width:260px">Music volume<input type="range" id="music-vol" min="0.1" max="1" step="0.1" value="${S.musicVol ?? .5}"></label>` : ''}
     <label class="toggle"><input type="checkbox" id="vid-on" ${S.videos?.on ? 'checked' : ''}>
       <span><b>Videos.</b> Kids can watch the trick videos in the Videos tab.</span></label>
     ${S.videos?.on ? `<label class="field" style="max-width:260px">Video time each day, per kid<select id="vid-mins">${[10,15,20,30,45,60].map(m => `<option value="${m}" ${m === S.videos.mins ? 'selected' : ''}>${m} minutes</option>`).join('')}</select></label>` : ''}
@@ -13476,6 +13481,7 @@ const acts = {
   rpage: d => { ui.readPage += +d; markRead(); saveMark(); },
   'game-sel': id => { ui.gameSel = id; ui.play = null; },
   'game-cat': id => { ui.gameCat = id; },
+  music: () => { S.music = !musicOn(); save(); if (musicOn()) musicStart(); else musicStop(); },
   shelf: id => { ui.shelf = id; },
   'read-aloud': () => { ui.readAloud = !ui.readAloud; if (!ui.readAloud) stopReading(); },
   'read-slow': () => { ui.readSlow = !ui.readSlow; },
@@ -13554,6 +13560,8 @@ app.addEventListener('change', e => {
   else if (id === 'ob-grade') { ui.obGrade = e.target.value; return; }
   else if (id === 'math-first') { S.mathFirst = e.target.checked; save(); }
   else if (e.target.dataset.gamelevel) { S.gameLevel ||= {}; if (e.target.value) S.gameLevel[e.target.dataset.gamelevel] = e.target.value; else delete S.gameLevel[e.target.dataset.gamelevel]; save(); }
+  else if (id === 'music-on') { S.music = e.target.checked; save(); if (musicOn()) musicStart(); else musicStop(); }
+  else if (id === 'music-vol') { S.musicVol = +e.target.value; save(); return; }
   else if (id === 'game-math') { S.gameMath = { every:+e.target.value }; save(); }
   else if (id === 'vid-on') { S.videos = { on:e.target.checked, mins:S.videos?.mins || 20 }; save(); }
   else if (id === 'vid-mins') { S.videos.mins = +e.target.value; save(); }
@@ -13568,6 +13576,86 @@ app.addEventListener('input', e => {
   if (e.target.id === 'ed-title') { b.title = e.target.value; touch(b); }
   if (e.target.id === 'ed-page') { b.pages[ui.page] = e.target.value; touch(b); }
 });
+
+/* ---------- music: original tunes played with Web Audio ---------- */
+const SONGS = {
+  sunny: { name:'Sunny Steps', bpm:112, wave:'triangle',
+    mel:'C5 E5 G5 E5 F5 A5 G5 - E5 G5 C6 G5 A5 F5 D5 - C5 E5 G5 E5 F5 D5 B4 - C5 - E5 D5 C5 - - -',
+    bass:'C3 C3 F3 F3 C3 C3 G2 G2 C3 C3 F3 F3 G2 G2 C3 C3' },
+  story: { name:'Story Time', bpm:76, wave:'sine',
+    mel:'A4 C5 F5 C5 A4 C5 F5 C5 G4 C5 E5 C5 G4 C5 E5 C5 F4 A4 D5 A4 F4 A4 D5 A4 G4 B4 D5 B4 C5 - - -',
+    bass:'F2 F2 C3 C3 D3 D3 G2 C3' },
+  play: { name:'Game On', bpm:138, wave:'square',
+    mel:'A4 C5 E5 A5 G5 E5 C5 E5 F5 A5 C6 A5 G5 E5 D5 - E5 G5 B5 G5 A5 E5 C5 A4 D5 F5 E5 D5 C5 B4 A4 -',
+    bass:'A2 A2 E2 E2 F2 F2 C3 C3 E2 E2 A2 A2 D3 D3 E2 E2', drums:true }
+};
+const NOTE_I = { C:0, 'C#':1, D:2, 'D#':3, E:4, F:5, 'F#':6, G:7, 'G#':8, A:9, 'A#':10, B:11 };
+const freqOf = n => { const m = n.match(/^([A-G]#?)(\d)$/); if (!m) return 0; return 440 * Math.pow(2, (NOTE_I[m[1]] + (+m[2] + 1) * 12 - 69) / 12); };
+const MUSIC = { ctx:null, master:null, song:null, step:0, next:0, timer:null, noise:null };
+const musicOn = () => S.music !== false;
+function songForView() {
+  if (S.setup || S.mode === 'grown') return 'sunny';
+  if (ui.tab === 'games') return 'play';
+  if (ui.tab === 'read' || ui.tab === 'write' || ui.tab === 'videos') return 'story';
+  return 'sunny';
+}
+function musicQuiet() { return !!((ui.video && ui.video.playing) || ui.readAloud || ui.listening || document.hidden); }
+function musicInit() {
+  if (MUSIC.ctx) return true;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+    MUSIC.ctx = new AC(); MUSIC.master = MUSIC.ctx.createGain(); MUSIC.master.gain.value = 0; MUSIC.master.connect(MUSIC.ctx.destination);
+    const len = MUSIC.ctx.sampleRate * .2, buf = MUSIC.ctx.createBuffer(1, len, MUSIC.ctx.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    MUSIC.noise = buf; return true;
+  } catch (e) { return false; }
+}
+function playNote(f, t, dur, wave, vol) {
+  const c = MUSIC.ctx, o = c.createOscillator(), g = c.createGain();
+  o.type = wave; o.frequency.value = f;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(.0005, t + dur);
+  o.connect(g); g.connect(MUSIC.master); o.start(t); o.stop(t + dur + .02);
+}
+function playHat(t, vol) {
+  const c = MUSIC.ctx, src = c.createBufferSource(), hp = c.createBiquadFilter(), g = c.createGain();
+  src.buffer = MUSIC.noise; hp.type = 'highpass'; hp.frequency.value = 7000;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0005, t + .05);
+  src.connect(hp); hp.connect(g); g.connect(MUSIC.master); src.start(t); src.stop(t + .06);
+}
+function playKick(t) {
+  const c = MUSIC.ctx, o = c.createOscillator(), g = c.createGain();
+  o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(45, t + .12);
+  g.gain.setValueAtTime(.5, t); g.gain.exponentialRampToValueAtTime(.001, t + .15);
+  o.connect(g); g.connect(MUSIC.master); o.start(t); o.stop(t + .16);
+}
+function musicTick() {
+  const c = MUSIC.ctx; if (!c) return;
+  const want = musicOn() && !musicQuiet() ? (S.musicVol ?? .5) * .14 : 0;
+  MUSIC.master.gain.setTargetAtTime(want, c.currentTime, .25);
+  const id = songForView();
+  if (MUSIC.song !== id) { MUSIC.song = id; MUSIC.step = 0; MUSIC.next = c.currentTime + .1; }
+  const sg = SONGS[id], mel = sg.mel.split(' '), bass = sg.bass.split(' '), stepDur = 60 / sg.bpm / 2;
+  if (MUSIC.next < c.currentTime) MUSIC.next = c.currentTime + .05;
+  while (MUSIC.next < c.currentTime + .25) {
+    const i = MUSIC.step % mel.length, t = MUSIC.next, n = mel[i];
+    if (want > 0) {
+      if (n !== '-') playNote(freqOf(n), t, stepDur * 1.6, sg.wave, sg.wave === 'square' ? .18 : .32);
+      if (i % 2 === 0) { const b = bass[(i / 2) % bass.length]; playNote(freqOf(b), t, stepDur * 1.9, 'triangle', .45); }
+      if (sg.drums) { if (i % 4 === 0) playKick(t); if (i % 2 === 1) playHat(t, .12); }
+    }
+    MUSIC.step++; MUSIC.next += stepDur;
+  }
+}
+function musicStart() {
+  if (!musicOn() || !musicInit()) return;
+  try { MUSIC.ctx.resume(); } catch (e) {}
+  if (!MUSIC.timer) MUSIC.timer = setInterval(musicTick, 90);
+}
+function musicStop() { if (MUSIC.timer) { clearInterval(MUSIC.timer); MUSIC.timer = null; } if (MUSIC.master) MUSIC.master.gain.setTargetAtTime(0, MUSIC.ctx.currentTime, .1); }
+document.addEventListener('pointerdown', () => { if (musicOn()) musicStart(); }, { capture:true });
+document.addEventListener('keydown', () => { if (musicOn()) musicStart(); }, { capture:true });
+document.addEventListener('visibilitychange', () => { if (MUSIC.ctx) musicTick(); });
+
 render();
 </script>
 
